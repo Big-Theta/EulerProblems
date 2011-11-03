@@ -1,0 +1,8 @@
+syntax: regexp
+.*\.pyc$
+.*\.sw[op]$
+.*\.o$
+.*\.out$
+.*latex.*
+.*html.*
+pUML$
