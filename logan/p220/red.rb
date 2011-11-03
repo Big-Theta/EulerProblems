@@ -1,10 +1,20 @@
 require 'Qt'
 
+$RIGHT = 0
+$UP =    1
+$LEFT =  2
+$DOWN =  3
+
+def right dir
+    (dir + 1) % 4
+end
+
 class QtApp < Qt::Widget
     slots "pressed()"
 
     def initialize
         super
+        @dir = $UP
 
         setWindowTitle "Heighway Dragon"
 
