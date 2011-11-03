@@ -9,6 +9,10 @@ def right dir
     (dir + 1) % 4
 end
 
+def left dir
+    (dir + 3) % 4
+end
+
 class QtApp < Qt::Widget
     slots "pressed()"
 
