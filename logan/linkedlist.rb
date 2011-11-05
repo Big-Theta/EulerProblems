@@ -22,7 +22,7 @@ def next_nothing nothing=12345
         puts "why am I here?"
         $strange.push page.clone
         puts 'Page is: ' + page.to_s
-        sleep 5
+        exit
     end
 
     next_nothing next_n
