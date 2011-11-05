@@ -5,7 +5,7 @@ $UP =    1
 $LEFT =  2
 $DOWN =  3
 
-$SPACING = 10
+$SPACING = 4
 
 def gen_directions val=10
     directions = "Fa"
@@ -44,9 +44,9 @@ class QtApp < Qt::Widget
 
 
 
-        @button = Qt::PushButton.new 'Push me', self
+        @button = Qt::PushButton.new "Don't push me TOO hard...", self
         connect @button, SIGNAL('clicked()'), self, SLOT('pressed()')
-        @quit_button = Qt::PushButton.new('Quit', self)
+        @quit_button = Qt::PushButton.new "Don't push me!", self
         connect @quit_button, SIGNAL('clicked()'), self, SLOT('quit()')
 
         hbox.addWidget @button, 1, Qt::AlignRight
