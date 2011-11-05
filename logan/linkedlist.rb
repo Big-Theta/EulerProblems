@@ -1,6 +1,6 @@
 require 'open-uri'
 
-def next_nothing nothing
+def next_nothing nothing=12345
     puts '> next_nothing ' + nothing.to_s
     page = open("http://www.pythonchallenge.com/pc/def/linkedlist.php?nothing=" + nothing.to_s).readlines[0]
 
@@ -14,9 +14,7 @@ def next_nothing nothing
         puts 'Page is: ' + page.to_s
     end
 
-    yield next_n
+    next_nothing next_n
 end
 
-next_nothing(
-
-1000.times {next_nothing 12345}
+next_nothing
