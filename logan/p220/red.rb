@@ -7,7 +7,7 @@ $DOWN =  3
 
 $SPACING = 10
 
-def gen_directions val
+def gen_directions val=10
     directions = "Fa"
     ret = []
 
@@ -23,7 +23,7 @@ def gen_directions val
 end
 
 class QtApp < Qt::Widget
-    slots "pressed()"
+    slots "pressed()", "quit()"
     attr_accessor :loc, :dir, :segs
 
     def initialize
@@ -32,32 +32,52 @@ class QtApp < Qt::Widget
 
         setWindowTitle "Heighway Dragon"
 
-        resize 350, 280
+        #resize 350, 280
         move 300, 150
 
-        @loc = center
+        @loc = Qt::Point.new((self.size.width / 2), (self.size.height / 2))
         @segs = []
+
+
+        vbox = Qt::VBoxLayout.new self
+        hbox = Qt::HBoxLayout.new
+
+
 
         @button = Qt::PushButton.new 'Push me', self
         connect @button, SIGNAL('clicked()'), self, SLOT('pressed()')
+        @quit_button = Qt::PushButton.new('Quit', self)
+        connect @quit_button, SIGNAL('clicked()'), self, SLOT('quit()')
+
+        hbox.addWidget @button, 1, Qt::AlignRight
+        hbox.addWidget @quit_button
+
+        vbox.addStretch 1
+        vbox.addLayout hbox
+
+        self.showFullScreen
 
         @steps = 0
-        @directions = gen_directions(10)
-        puts @directions
+        @directions = gen_directions(14)
+        @n_steps = 1000
 
         show
+    end
+
+    def quit
+        exit
     end
 
     def next_c
         @directions.shift
     end
 
-    def center
-        Qt::Point.new((self.size.width / 2), (self.size.height / 2))
-    end
-
     def pressed
-        parse!
+        @n_steps.times do
+            #sleep 0.1
+            parse!
+        end
+        #puts self.pos
         update
     end
 
@@ -70,7 +90,7 @@ class QtApp < Qt::Widget
             parse!
         when 'F'
             @steps += 1
-            puts @steps.to_s
+            #puts @steps.to_s
             forward!
         when 'L'
             left!
