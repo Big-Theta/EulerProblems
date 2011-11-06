@@ -7,7 +7,7 @@ $DOWN =  3
 
 $SPACING = 4
 
-def gen_directions val=10
+def gen_directions val=15
     directions = "Fa"
     ret = []
 
@@ -42,8 +42,6 @@ class QtApp < Qt::Widget
         vbox = Qt::VBoxLayout.new self
         hbox = Qt::HBoxLayout.new
 
-
-
         @button = Qt::PushButton.new "Don't push me TOO hard...", self
         connect @button, SIGNAL('clicked()'), self, SLOT('pressed()')
         @quit_button = Qt::PushButton.new "Don't push me!", self
@@ -57,9 +55,9 @@ class QtApp < Qt::Widget
 
         self.showFullScreen
 
-        @steps = 0
+        @n_steps = @n_steps || 2
         @directions = gen_directions(14)
-        @n_steps = 1000
+        @steps = 0
 
         show
     end
@@ -75,32 +73,36 @@ class QtApp < Qt::Widget
     def pressed
         @n_steps.times do
             #sleep 0.1
-            parse!
+            x = parse!
+            while x == 0 do
+                x = parse!
+            end
         end
         #puts self.pos
         update
+        @n_steps = @n_steps ** 2
+        puts @n_steps
     end
 
     def parse!
+        ret = 0
         val = next_c
         case val
         when 'a'
-            parse!
         when 'b'
-            parse!
         when 'F'
             @steps += 1
             #puts @steps.to_s
             forward!
+            ret = 1
         when 'L'
             left!
-            parse!
         when 'R'
             right!
-            parse!
         else
-            parse!
         end
+
+        ret
     end
 
     def paintEvent event
