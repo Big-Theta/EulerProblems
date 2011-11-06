@@ -5,7 +5,7 @@ $UP =    1
 $LEFT =  2
 $DOWN =  3
 
-$SPACING = 4
+$SPACING = 1
 
 def gen_directions val=15
     directions = "Fa"
@@ -35,7 +35,8 @@ class QtApp < Qt::Widget
         #resize 350, 280
         move 300, 150
 
-        @loc = Qt::Point.new((self.size.width / 2), (self.size.height / 2))
+        self.showFullScreen
+        @loc = Qt::Point.new((self.size.width / 2) + 700, (self.size.height / 2) + 500)
         @segs = []
 
 
@@ -53,12 +54,12 @@ class QtApp < Qt::Widget
         vbox.addStretch 1
         vbox.addLayout hbox
 
-        self.showFullScreen
 
-        @n_steps = @n_steps || 2
-        @directions = gen_directions(14)
+        @n_steps = 200_000 #60_000
+        @directions = gen_directions(18)
         @steps = 0
 
+        #pressed
         show
     end
 
@@ -80,8 +81,8 @@ class QtApp < Qt::Widget
         end
         #puts self.pos
         update
-        @n_steps = @n_steps ** 2
-        puts @n_steps
+        #@n_steps = @n_steps ** 2
+        #puts @n_steps
     end
 
     def parse!
