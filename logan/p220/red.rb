@@ -5,7 +5,7 @@ $UP =    1
 $LEFT =  2
 $DOWN =  3
 
-$SPACING = 1
+$SPACING = 10
 
 def gen_directions val=15
     directions = "Fa"
@@ -36,7 +36,7 @@ class QtApp < Qt::Widget
         move 300, 150
 
         self.showFullScreen
-        @loc = Qt::Point.new((self.size.width / 2) + 700, (self.size.height / 2) + 500)
+        @loc = Qt::Point.new self.size.width / 2, self.size.height / 2
         @segs = []
 
 
@@ -55,8 +55,8 @@ class QtApp < Qt::Widget
         vbox.addLayout hbox
 
 
-        @n_steps = 200_000 #60_000
-        @directions = gen_directions(18)
+        @n_steps = 1 #60_000
+        @directions = gen_directions(10)
         @steps = 0
 
         #pressed
@@ -131,13 +131,13 @@ class QtApp < Qt::Widget
 
         case @dir
         when 0
-            new_x = @loc.x + $SPACING
+            new_x = @loc.x - $SPACING
             new_y = @loc.y
         when 1
             new_x = @loc.x
             new_y = @loc.y - $SPACING
         when 2
-            new_x = @loc.x - $SPACING
+            new_x = @loc.x + $SPACING
             new_y = @loc.y
         when 3
             new_x = @loc.x
