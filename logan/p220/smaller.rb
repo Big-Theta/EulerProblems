@@ -12,71 +12,72 @@ class Point
 end
 
 class Loc < Point
+    attr_accessor :target
     def initialize(x=0, y=0)
         @x, @y = x, y
         #@center = Loc.new 0, 0
         #@end = Loc.new 0, 1
-        @orientation = $UP
+        @dir = $UP # Addressing an off by one initialization in center!
+        @center = Point.new 0, 0
         @steps = 0
-        @total_steps = 0
-        center!
         first!
     end
 
-    def rot! direction=1
-        @orientation = (@orientation - 1) % 4 if direction == 1
-        @orientation = (@orientation + 1) % 4 if direction == 0
+    def rot! direction=0
+        @dir = (@dir - 1) % 4 if direction == 1
+        @dir = (@dir + 1) % 4 if direction == 0
     end
 
     def first!
-        case @orientation
+        case @dir
         when $RIGHT
-            @x = @x + @center.x + 1
+            @x = @center.x + 1
         when $UP
-            @y = @y + @center.y + 1
+            @y = @center.y + 1
         when $LEFT
-            @x = @x + @center.x - 1
+            @x = @center.x - 1
         when $DOWN
-            @y = @y + @center.y - 1
+            @y = @center.y - 1
         end
-        rot!
         @steps = 1
-        @total_steps += 1
+        rot!
     end
 
-    def center! x=0, y=0
+    def center!
         @steps = 0
-        @center = Point.new x, y
+        @center = Point.new @x, @y
     end
 
     def double
         if @steps == 0
             first!
         else
-            @total_steps += @steps
             @steps *= 2
-            rot!
-            @x, @y = @y + @x + @center.x, -1 * @x + @y + @center.y
+            #rot!
+            p_x, p_y = @x - @center.x, @y - @center.y
+            n_x, n_y = p_x + p_y, -1 * p_x + p_y
+            @x, @y = n_x + @center.x, n_y + @center.y
+        end
+    end
+
+    def seek
+        while @steps < @target do
+            if @steps > @target - @steps then
+                double # @steps is doubled
+                @target = @steps - @target
+                center! # @steps is now 0
+            else
+                double
+            end
         end
     end
 
     def to_s
-        puts "x: #{@x} y: #{@y} steps: #{@steps} total_steps: #{@total_steps}"
+        "x: #{@x} y: #{@y} steps: #{@steps} target: #{@target} dir: #{@dir}"
     end
 end
 
-a = Loc.new 0, 0
-puts a
-puts
-3.times do
-    a.double
-puts a
-end
-
-puts '------------'
-a.center!(a.x, a.y)
-
-3.times do
-    a.double
-    puts a
-end
+magic = Loc.new
+magic.target = 10 ** 12
+magic.seek
+puts magic
