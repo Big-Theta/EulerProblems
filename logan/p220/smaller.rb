@@ -73,7 +73,7 @@ class Loc < Point
     end
 
     def to_s
-        "x: #{@x} y: #{@y} steps: #{@steps} target: #{@target} dir: #{@dir}"
+        "x: #{@x} y: #{@y}"
     end
 end
 
