@@ -46,3 +46,12 @@ def is_probable_prime(n):
             return False
 
     return True # no base tested showed n as composite
+
+def foo():
+    import time
+    start = time.time()
+    i = 0
+    while time.time() - start < 5:
+        is_probable_prime(i)
+        i += 1
+    print "Got this far: " + str(i)
