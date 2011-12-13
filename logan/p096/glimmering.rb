@@ -3,6 +3,7 @@ class Puzzle
     def initialize puzzle_hash
         @board = {}
         puzzle_hash.each_pair {|index, val| self[index] = val}
+        filter 1, ???
     end
 
     def filter group, loc
@@ -10,6 +11,8 @@ class Puzzle
         done = true
 
         self.each_spot(group) do |a_x, a_y|
+            pos = self[a_x, a_y]
+            print pos
 
             # each element in my_spot...
             self.each_spot(group) do |b_x, b_y|

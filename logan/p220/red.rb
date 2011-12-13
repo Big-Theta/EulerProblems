@@ -5,8 +5,8 @@ $UP =    1
 $LEFT =  2
 $DOWN =  3
 
-$SPACING = 10
-$START = 16
+$SPACING = 3
+$START = 5_000
 
 def gen_directions val=15
     directions = "Fa"
@@ -57,7 +57,7 @@ class QtApp < Qt::Widget
 
 
         @n_steps = 1 #60_000
-        @directions = gen_directions(10)
+        @directions = gen_directions 13
         @steps = 0
         $START.times {pressed}
 
