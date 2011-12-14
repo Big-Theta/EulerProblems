@@ -54,12 +54,14 @@ def foo
     puts "Got this far: " + i.to_s
 end
 
-foo
-puts 2.prime?
-puts 3.prime?
-puts 5.prime?
-puts 9001.prime?
-puts 9003.prime?
-puts 83843.prime?
-puts 1234567891.prime?
-puts 2425967623052370772757633156976982469681.prime?
+if __FILE__ == $0
+    foo
+    puts 2.prime?
+    puts 3.prime?
+    puts 5.prime?
+    puts 9001.prime?
+    puts 9003.prime?
+    puts 83843.prime?
+    puts 1234567891.prime?
+    puts 2425967623052370772757633156976982469681.prime?
+end
