@@ -13,7 +13,6 @@ def problem82
     end
     prev_col = min_vertical(prev_col, curr_col)
   end
-  puts m[[m_dim[0], m_dim[1]]]
   prev_col.min
 end
 
