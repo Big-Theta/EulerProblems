@@ -111,6 +111,5 @@ def conquor maxc, matrix
 end
 
 if __FILE__ == $0
-    #puts divide *gimme_matrix_dummy
     puts conquor(*gimme_matrix).my_val
 end

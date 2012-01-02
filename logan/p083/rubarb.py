@@ -92,4 +92,7 @@ def run():
 if __name__ == '__main__':
     #print m
     #parse()
+    import time
+    start = time.time()
     run()
+    print "This took %lf seconds." % float(time.time() - start)
