@@ -1,0 +1,71 @@
+#Cameron Evans
+
+
+load "MillerRabin.rb"
+
+def problem263 ( )
+  a = []
+  testnum = 1
+  sexy_primes = []
+  newest_prime = 0
+  last_prime_tested = 0
+  found = 0
+  total = 0
+  essential_divisors = []
+  while (found < 4)
+    testnum += 1
+    a.push(testnum)
+    (0...a.length).each do |i|
+      stopper = testnum.divmod(a[i])
+      if (stopper[1] == 0 && a[i] != testnum)
+        a.pop
+        newest_prime = a[-1]
+        break
+      elsif stopper[0] < a[i]
+        newest_prime = a[-1]
+        break
+      end
+    end
+    if newest_prime != last_prime_tested
+      if test_sexiness(a) == true  
+        if test_practicality(a[-1] - 9) == true
+          #puts "PARADISE FOUND!!!! #{a[-1] - 9}"
+          #puts "#{a[-1] - 9}, #{test_practicality(a[-1] - 9)}"
+          total += (a[-1] - 9)
+          puts "sum is now #{total}"
+          found += 1
+        end
+        puts "found: #{found}, sum: #{total}"
+      end
+      last_prime_tested = newest_prime
+    end
+  end
+  total
+end
+
+def test_sexiness (a)
+  if (a.length >= 4 and a[-1] == (a[-2] + 6) and a[-2] == (a[-3] + 6) and a[-3] == (a[-4] + 6))
+    #puts "sexy prime found"
+    #puts "#{a[-1]}, #{a[-2]}, #{a[-3]}, #{a[-4]}"
+    true
+  else
+    false
+  end
+end
+
+def test_practicality (num)
+  #puts "testing #{num}"
+  (num - 8..num + 8).step(4) do |x|
+    div_sum = 0
+    (1..x).each do |d|
+      if (x % d == 0)
+        if d > (div_sum + 1)
+          print "false b/c #{div_sum} + 1 < #{d} testing #{x} part of #{num}  "
+          return false
+        end
+        div_sum += d
+      end
+    end
+  end
+  true
+end

@@ -24,7 +24,7 @@ def min_vertical(prev_col, curr_col)
   (1..dim).each do |y|
     down[y] = curr_col[y] + [prev_col[y], down[y - 1]].min
   end
-  answer[dim] = [prev_col[dim] + curr_col[dim], down[dim - 1] + curr_col[dim]].min
+  answer[dim] = prev_col[dim] + curr_col[dim]
   (1..dim).each do |y|
     y = dim - y
     answer[y] = [curr_col[y] + [prev_col[y], answer[y + 1]].min, down[y]].min

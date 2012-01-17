@@ -1,0 +1,52 @@
+def problem220(dx, steps)
+  pos = [0, 0]
+  steps_left = steps
+  direction_x = 1
+  direction_y = 1
+  (0..dx).each do |x|
+    puts "x is #{x}"
+    x = dx - x
+    branch = steps_left.divmod(2**x)
+    if branch[0] > 0
+      pos_dx = dragon(x)
+      pos[0] += pos_dx[0] * direction_x
+      pos[1] += pos_dx[1] * direction_y
+      direction_x = -1
+      direction_y = -1
+    end
+      steps_left -= branch[0] * 2**x
+  end
+  pos
+
+end
+
+def dragon_string(dx)
+  d0 = "Fa"
+  puts d0
+  (0...dx).each do |x|
+    d0.gsub!("a", "ARBFR")
+    d0.gsub!("b", "LFALB")
+    d0.gsub!("A", "a")
+    d0.gsub!("B", "b")
+    puts d0
+  end
+end
+
+def dragon(dx)
+  pos2 = [0, 1]
+  (1..dx).each do |x|
+    if x % 4 == 0
+      pos2[1] -= pos2[0]
+      pos2[0] = 0
+    elsif x % 4 == 1
+      pos2[0] = pos2[1]
+    elsif x % 4 == 2
+      pos2[0] += pos2[1]
+      pos2[1] = 0
+    elsif x % 4 == 3
+      pos2[1] = -pos2[0]
+    end
+  end
+  printf("dx = %i, x = %i, y = %i\n", dx, pos2[0], pos2[1])
+  pos2
+end
