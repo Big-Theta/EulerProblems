@@ -32,5 +32,8 @@ def min_adjacent(x, y, ps)
 end
 
 if __FILE__ == $0
+    require 'time'
+    start = Time.now
     puts problem83
+    puts Time.now - start
 end
