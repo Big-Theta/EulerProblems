@@ -30,3 +30,7 @@ end
 def min_adjacent(x, y, ps)
   [ps[[x - 1, y]], ps[[x + 1, y]], ps[[x, y - 1]], ps[[x, y + 1]]].min
 end
+
+if __FILE__ == $0
+    puts problem83
+end
