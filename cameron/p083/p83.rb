@@ -20,7 +20,7 @@ def update_column(x, path_sum, m, dim_x, dim_y)
       path_sum[[x, y]] = possible
     end
   end
-  if modified == true and x > 0
+  if modified and x > 0
     update_column(x - 1, path_sum, m, dim_x, dim_y)
   else
     x + 1
