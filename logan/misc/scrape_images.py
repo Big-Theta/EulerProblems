@@ -1,8 +1,8 @@
-#import http.client
 '''
 import xml.parsers.expat as xml_parsers
 from html.parser import HTMLParser, HTMLParseError
 '''
+
 import urllib
 from HTMLParser import HTMLParser
 from BeautifulSoup import BeautifulSoup
@@ -11,18 +11,6 @@ def beautiful(page):
     soup = BeautifulSoup(page)
     print soup.prettify()
     return soup
-
-class MyHTMLParser(HTMLParser):
-    def handle_starttag(self, tag, attrs):
-        print " -- Start: {}".format(tag)
-        print(attrs)
-
-    def handle_endtag(self, tag):
-        pass
-        #print("Encountered a {} end tag".format(tag))
-
-    def handle_data(self, data):
-        print "Encountered some data:", data
 
 
 def gen_pages(max_page=300000):
@@ -33,16 +21,6 @@ def gen_pages(max_page=300000):
         res = resource.format(i)
         f = urllib.urlopen(base_url + res)
         yield f.read()
-
-
-def default_handler(data):
-    print("Got this: " + str(data))
-
-
-def parse_page(page):
-    parser = MyHTMLParser()
-    #parser = MyHTMLParser(strict=False)
-    parser.feed(str(page))
 
 
 def handle():
