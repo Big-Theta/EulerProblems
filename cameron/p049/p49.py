@@ -6,31 +6,32 @@ def problem49():
     prime_list = primes_upto(10000)
     remove_small_vals(prime_list)
     permutations = []
+    perm_sets = []
     for p in prime_list:
         permutations = get_permutations(p)
-        matches = []
+        perm_set = []
         for perm in permutations:
             if perm in prime_list:
-                matches.append(perm)
-        if len(matches) > 4:
-            difference_count = []
-            differences = []
-            for i, x in enumerate(matches):
-                if i < len(matches) + 1:
-                    for y in matches[i:len(matches)]:
-                        dif = y - x
-                        if dif in differences:
-                            difference_count[differences.index(dif)] += 1
-                        else:
-                            differences.append(dif)
-                            difference_count.append(1)
-            for i, x in enumerate(difference_count):
-                if x < 3:
-                    difference_count.pop(i)
-                    differences.pop(i)
-            if len(differences) > 0:
-                print ("anser is %i" % differences[0])
-
+                perm_set.append(perm)
+        if len(perm_set) > 2:
+            perm_sets.append(perm_set)
+    possibles = []
+    for s in perm_sets:
+        dif_c = []
+        dif_v = []
+        for i, x in enumerate(s):
+            for y in s[i + 1:]:
+                if y - x in dif_v:
+                    dif_c[dif_v.index(y - x)] += 1
+                else:
+                    dif_c.append(1)
+                    dif_v.append(y - x)
+        for p in s:
+            seq_c = 0 #how many are in the sequence
+            for i, x in enumerate(dif_c):
+                if x > 1:
+                    if p in s and p + dif_v[i] in s and p + (2 * dif_v[i]) in s:
+                        print "%i%i%i" % (p, p + dif_v[i], p + (2 * dif_v[i]))
     return True
 
 
@@ -59,5 +60,4 @@ def remove_small_vals(prime_list):
         prime_list.pop(0)
 
 if __name__ == "__main__":
-    #print get_permutations(1234)
     problem49()
