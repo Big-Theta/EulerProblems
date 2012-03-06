@@ -1,0 +1,11 @@
+Make bintools easier to use interactively, as for CS 150 homework.
+
+1. Add option to int2bin, so specify a word length, and automatically sign-extend to that.
+2. In general look at how to incorporate word length
+3. Review how arithmetic works, decide if we want to add to overflow dection capability
+4. Documentation. How?
+   Wiki?
+   Pydoc? Check 'em out.
+
+
+
