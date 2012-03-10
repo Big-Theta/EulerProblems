@@ -4,12 +4,12 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 BITSDEFAULT = 8
 
 class BinLabError(Exception):
-    '''Generic error for illegal operations.'''
+    """Generic error for illegal operations."""
     pass
 
 
 def bincast(obj, new_type, bits=BITSDEFAULT):
-    '''Takes the obj and casts is as an object of type new_type.
+    """Takes the obj and casts is as an object of type new_type.
 
     This will modify the underlying value of the returned value. For example,
     int(bincast(UnsignedBinary('1100'), ComplimentBinary)) -> -4
@@ -18,7 +18,7 @@ def bincast(obj, new_type, bits=BITSDEFAULT):
     @param new_type (BaseBinary obj or str)
         if BaseBinary obj, this is the return type of the case. If str, then
         the str must specify the desired type.
-    '''
+    """
 
     type_map = {'ComplimentBinary' : ComplimentBinary,
                 'UnsignedBinary' : UnsignedBinary,
@@ -36,7 +36,7 @@ def bincast(obj, new_type, bits=BITSDEFAULT):
 
 
 def binfactory(val, new_type, bits=None):
-    '''
+    """
     @param val (str or int)
         The new value. If str, then this is assumed to be encoded in the
         new_type encoding.
@@ -46,7 +46,7 @@ def binfactory(val, new_type, bits=None):
     @param bits
         If val is a str and bits is None, bits defaults to the length of the
         str. If val is an int and bits is NONE, bits defaults to BITSDEFAULT.
-    '''
+    """
 
     type_map = {'ComplimentBinary' : ComplimentBinary,
                 'UnsignedBinary' : UnsignedBinary,
@@ -67,6 +67,33 @@ def binfactory(val, new_type, bits=None):
         raise BinLabError()
 
 
+def display(func):
+    """This is a decorator for binary operations.
+
+    It will display the
+    operands in their native binary, decimal, and hexadecimal. It will show
+    the results, and the operation performed."""
+
+    def decorated(self, *other):
+        """self is expected because this will only decorate methods. other,
+        however, might or might not exist."""
+
+        if other:
+            bin_a = str(self)
+            bin_b = str(other)
+
+            type_a = self.obj_type
+            type_b = other.obj_type
+
+            int_a = self.val
+            int_b = other.val
+
+            hex_a = hex(self.val)
+            hex_b = hex(other.val)
+        else:
+            pass
+
+
 class BaseBinary(object):
     """This base class defines all of the arithmatic operations for the
     inheriting classes."""
@@ -75,14 +102,14 @@ class BaseBinary(object):
 
     @abstractmethod
     def __init__(self, val=0, bits=8):
-        '''
+        """
         @param val (int or str)
             If str, use base 10.
         @param bits (int)
             The number of bits to use in the representation.
         @param encoding (str)
             Use one of ['compliment', 'signed', 'inverse']
-        '''
+        """
 
         self.val = int(val)
         self.bits = bits
@@ -104,15 +131,15 @@ class BaseBinary(object):
 
     @abstractproperty
     def bits(self):
-        '''The alternative to this is to import abc and then set __metaclass__
-        to abcmeta, or something like that.'''
+        """The alternative to this is to import abc and then set __metaclass__
+        to abcmeta, or something like that."""
 
         return self._bits
 
     @bits.setter
     def bits(self, bits):
-        '''This method  is the reason for the properties. When we set the bits,
-        we want to automatically truncate or extend the binary number.'''
+        """This method  is the reason for the properties. When we set the bits,
+        we want to automatically truncate or extend the binary number."""
 
         self._bits = bits
 
@@ -122,12 +149,12 @@ class BaseBinary(object):
 
     @abstractmethod
     def _truncate(self):
-        '''Called by bits.setter after the bits have been shortened.'''
+        """Called by bits.setter after the bits have been shortened."""
         pass
 
     @abstractmethod
     def _extend(self):
-        '''Called by bits.setter after the bits have been lengthened.'''
+        """Called by bits.setter after the bits have been lengthened."""
         pass
 
     @abstractmethod
@@ -232,14 +259,14 @@ class ComplimentBinary(BaseBinary):
             self.val = val
         elif type(val) == str:
             self.val = int(val, 2)
-            '''
+            """
             if val.startswith('0b') or val.startswith('-0b'):
                 val = int(val, 2)
             elif val.startswith('0x') or val.startswith('-0x'):
                 val = int(val, 16)
             else:
                 val = int(val)
-            '''
+            """
         else:
             raise BinLabError()
 
@@ -323,11 +350,11 @@ if __name__ == '__main__':
     b = ComplimentBinary(7)
     j = ComplimentBinary(-1)
     k = ComplimentBinary(-7)
-    '''
+    """
     x = ComplimentBinary(10)
     y = ComplimentBinary(10010012011)
     z = ComplimentBinary(10010012011, bits=16)
-    '''
+    """
 
     print('a    : ' + str(a))
     print('b    : ' + str(b))
@@ -346,9 +373,13 @@ if __name__ == '__main__':
     print('and  : ' + str(b & a))
     print('xor  : ' + str(b ^ a))
     print('or   : ' + str(b | a))
+    print('--------------')
+    print(a.__add__)
+    print(dir(a.__add__))
+    print(a.__add__.__func__)
 
-    '''
+    """
     print(x)
     print(y)
     print(z)
-    '''
+    """
