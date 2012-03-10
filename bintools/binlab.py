@@ -1,5 +1,7 @@
 from __future__ import print_function
 from abc import ABCMeta, abstractmethod, abstractproperty
+import re
+import inspect
 
 BITSDEFAULT = 8
 
@@ -25,14 +27,18 @@ def bincast(obj, new_type, bits=BITSDEFAULT):
                 'GrayCode' : GrayCode,
                 'SIFBinary' : SIFBinary}
 
-    assert isinstance(obj, BaseBinary)
+    assert isinstance(obj, BaseBinary) or isinstance(obj, int)
+
+    if isinstance(new_type, BaseBinary):
+        new_type = new_type.obj_type
 
     if new_type in type_map.keys():
         return type_map[new_type](int(obj), bits=bits)
     elif new_type in type_map.values():
         return new_type(int(obj), bits=bits)
     else:
-        raise BinLabError()
+        raise BinLabError("Could not cast {0} "
+                          "as type {1}.".format(type(obj), type(new_type)))
 
 
 def binfactory(val, new_type, bits=None):
@@ -67,7 +73,54 @@ def binfactory(val, new_type, bits=None):
         raise BinLabError()
 
 
-def display(func):
+def my_coerce(func):
+    def decorated(self, other):
+        return func(self, bincast(other, self, bits=self.bits))
+
+    # Without this, the func_name would show up as decorated. However, in
+    # the _display decorator, we check for the function name.
+    decorated.func_name = func.func_name
+    return decorated
+
+
+def _print_binary_op(op_a, op_b, func_symbol, retval):
+    # Well... this is a pretty terrible solution... I'm making certain that
+    # the module that initiated this call is NOT binlab.py. So, this makes the
+    # assumption that all paths that should be printed are short.
+    if re.search('binlab.py', inspect.stack()[2][1]):
+        return
+
+    fmt_str = []
+    fmt_str += ["{0:>20}{1:>20}{2:>20}{3:>20}{4:>20}".format(
+            'Encoding |', 'Binary Value |', 'Int Value |', 'Hex Value |',
+            'Oct Value |')]
+    fmt_str += ["{a[type_of]:<20}|{a[bin_of]:>20}{a[int_of]:>20}"
+                "{a[hex_of]:>20}{a[oct_of]:>20}"]
+    fmt_str += ["{b[type_of]:<20}{func_symbol:>2}{b[bin_of]:>17}"
+                "{func_symbol:>2}{b[int_of]:>17}"
+                "{func_symbol:>2}{b[hex_of]:>17}"
+                "{func_symbol:>2}{b[oct_of]:>17}"]
+    fmt_str += ["-" * 100]  # This could be separated out to individual
+                            # equal bars
+    fmt_str += ["{res[type_of]:>20}{res[bin_of]:>20}{res[int_of]:>20}"
+                "{res[hex_of]:>20}{res[oct_of]:>20}"]
+    fmt_str = '\n'.join(fmt_str)
+
+    a = {}
+    b = {}
+    res = {}
+
+    for dict_, operand in [[a, op_a], [b, op_b], [res, retval]]:
+        dict_['type_of'] = operand.obj_type
+        dict_['bin_of'] = str(operand)
+        dict_['int_of'] = operand.val
+        dict_['hex_of'] = hex(operand.val)
+        dict_['oct_of'] = oct(operand.val)
+
+    print(fmt_str.format(a=a, b=b, res=res, func_symbol=func_symbol))
+
+
+def _display(func):
     """This is a decorator for binary operations.
 
     It will display the
@@ -78,27 +131,74 @@ def display(func):
         """self is expected because this will only decorate methods. other,
         however, might or might not exist."""
 
-        if other:
-            bin_a = str(self)
-            bin_b = str(other)
-
-            type_a = self.obj_type
-            type_b = other.obj_type
-
-            int_a = self.val
-            int_b = other.val
-
-            hex_a = hex(self.val)
-            hex_b = hex(other.val)
+        retval = func(self, *other)
+        op = re.search("(?P<operation>__\w+__)", func.func_name)
+        if not op:
+            raise BinLabError('"{0}" is not a recognized BinLab '
+                              'function.'.format(func.func_name))
         else:
-            pass
+            if op.group('operation') in self._unary_func_names:
+                _print_unary_op(self, retval)
+            elif op.group('operation') in self._binary_func_names:
+                #other = bincast(other[0], self, bits=self.bits)
+                #other = other[0]
+                _print_binary_op(self, other[0],
+                                 self._binary_func_names[func.func_name],
+                                 retval)
+            elif op.group('operation') in self._comparison_func_names.keys():
+                _print
+            else:
+                raise BinLabError('"{0}" is not a recognized BinLab '
+                                  'operation.'.format(op.group('operation')))
+
+        return retval
+
+    return decorated
 
 
 class BaseBinary(object):
     """This base class defines all of the arithmatic operations for the
-    inheriting classes."""
+    inheriting classes.
+
+    Note: I'm not metaclassing because the syntax is different
+    between python2 and python3.
+
+    This class needs to define operations for quite a number of
+    operators. Each of these operators must first coerce the operands to
+    a common type, then must be able to display the operations, and then must
+    return the correct values. For all of them, the operations are the same:
+
+    1) Coerce the second operand into the datatype of the first.
+    2) Perform the operation using obj1.val OP obj2.val
+    3) Report the display type, operators, and return value to a display
+       function.
+    4) Return the correct value.
+
+    This could plausibly be done with some metaclass shenatigans. First, it
+    would probably be pragmatic to remove the ABCMeta definition and instead
+    use a Python 2.5 style abstract base class. Second, we would define a
+    metaclass that automatically applies 2 decorators to the methods named
+    in the _(\w+)_func_names lists below. The first would coerce the second
+    argument into the datatype of the first (using bincast), and the second
+    decorator would decorate the operator with the appropriate _print function.
+
+    Instead, I'm going to manually apply these decorators, because that
+    syntax should be the same for python2 and python3.
+    """
 
     __metaclass__ = ABCMeta
+
+    # These names are used to switch on the correct display mechanism.
+    # TODO: None of the unary or comparison functions have stubs yet.
+    _unary_func_names = ['__nonzero__', '__neg__', '__pos__', '__abs__',
+                         '__invert__', '__oct__', '__hex__']
+    _binary_func_names = {'__add__' : '+', '__sub__' : '-', '__mul__' : '*',
+                          '__and__' : '&', '__xor__' : '^', '__or__' : '|'}
+    #  '__lshift__', '__rshift__', 
+    _comparison_func_names = ['__cmp__']
+    #['__lt__', '__le__', '__eq__', '__ne__', '__gt__', '__ge__']
+    _boolean_func_names = ['__nonzero__']
+
 
     @abstractmethod
     def __init__(self, val=0, bits=8):
@@ -111,12 +211,19 @@ class BaseBinary(object):
             Use one of ['compliment', 'signed', 'inverse']
         """
 
+        self.display = False
         self.val = int(val)
         self.bits = bits
+        # FIXME
+        # I'm INTENDING for this to call the method obj_type.setter. I sorta
+        # doubt that that this is what is happening, however. Use the __dict__
+        # or __setattr__ method instead? At the very least, confirm that
+        # I'm not overwritting the method.
         self.obj_type = "BaseBinary"
 
         # Not yet used
         self.endian = 'little'
+        self.display = True
 
     def sign(self):
         return '0' if self.val >= 0 else '1'
@@ -141,7 +248,9 @@ class BaseBinary(object):
         """This method  is the reason for the properties. When we set the bits,
         we want to automatically truncate or extend the binary number."""
 
+        self.display = False
         self._bits = bits
+        self.display = True
 
     @bits.deleter
     def bits(self):
@@ -180,6 +289,8 @@ class BaseBinary(object):
     def __int__(self):
         return self.val
 
+    @_display
+    @my_coerce
     def __add__(self, other):
         # The int branch is used in a situation where I use (self + 1) to
         # find the negative representation of some numbers. It's nice to be
@@ -345,17 +456,25 @@ class SIFBinary(BaseBinary):
     pass
 
 
-if __name__ == '__main__':
+def main():
+    """I'm using a main function instead of placing all of this in the
+    __name__ == '__main__' conditional because it reduces parse times for
+    imports."""
+
     a = ComplimentBinary(10)
     b = ComplimentBinary(7)
     j = ComplimentBinary(-1)
+    print(a + b)
+    """
     k = ComplimentBinary(-7)
+    """
     """
     x = ComplimentBinary(10)
     y = ComplimentBinary(10010012011)
     z = ComplimentBinary(10010012011, bits=16)
     """
 
+    """
     print('a    : ' + str(a))
     print('b    : ' + str(b))
     print('--- a OP b ---')
@@ -374,12 +493,20 @@ if __name__ == '__main__':
     print('xor  : ' + str(b ^ a))
     print('or   : ' + str(b | a))
     print('--------------')
+    print(j)
+    print(k)
+    """
+    """
     print(a.__add__)
     print(dir(a.__add__))
     print(a.__add__.__func__)
+    """
 
     """
     print(x)
     print(y)
     print(z)
     """
+
+if __name__ == '__main__':
+    main()
