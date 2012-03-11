@@ -201,7 +201,7 @@ class BaseBinary(object):
 
 
     @abstractmethod
-    def __init__(self, val=0, bits=8):
+    def __init__(self, val=0, bits=BITSDEFAULT):
         """
         @param val (int or str)
             If str, use base 10.
@@ -211,7 +211,6 @@ class BaseBinary(object):
             Use one of ['compliment', 'signed', 'inverse']
         """
 
-        self.display = False
         self.val = int(val)
         self.bits = bits
         # FIXME
@@ -223,7 +222,6 @@ class BaseBinary(object):
 
         # Not yet used
         self.endian = 'little'
-        self.display = True
 
     def sign(self):
         return '0' if self.val >= 0 else '1'
@@ -248,9 +246,7 @@ class BaseBinary(object):
         """This method  is the reason for the properties. When we set the bits,
         we want to automatically truncate or extend the binary number."""
 
-        self.display = False
         self._bits = bits
-        self.display = True
 
     @bits.deleter
     def bits(self):
@@ -368,6 +364,7 @@ class ComplimentBinary(BaseBinary):
 
         if type(val) == int:
             self.val = val
+        # TODO This doesn't handle hex strings.
         elif type(val) == str:
             self.val = int(val, 2)
             """
