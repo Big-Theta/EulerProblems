@@ -1,6 +1,19 @@
 from binlab import *
+import sys
+#sys.setrecursionlimit(300)
 
-a = ComplimentBinary(10)
-b = ComplimentBinary(7)
+a = ComplimentBinary(7)
+b = ComplimentBinary(10)
 j = ComplimentBinary(-1)
-print(a + b)
+a + b
+a - b
+a * b
+a & b
+a ^ b
+a | b
+
+a.xnor(b)
+-a
++a
+abs(a)
+~a
