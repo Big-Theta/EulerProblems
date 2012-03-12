@@ -137,21 +137,26 @@ def sum_of_adjacency_to_power(my_matrix, power):
     return np.sum(e)
 
 
-def sum_of_vector_mutiplied_by_adjacency(my_matrix, power):
+def sum_of_vector_multiplied_by_adjacency(power):
     '''Hard coded script copied and pasted. "power" is assumed to be 9'''
     print 'creating matrix...'
     my_matrix = np.matrix(create_matrix(32))
 
     print 'matrix created.'
-    print 'creating vector of 1\'s'
+    print 'creating vector of 1\'s...'
     vect = np.matrix([1 for i in range(len(my_matrix))])
     print "vector of 1's created."
     print 'running loop'
-    print
-    print my_matrix.ndim
 
     for i in range(9):
         print 'Working on: ' + str(i)
         vect = vect * my_matrix
 
-    print np.sum(vect)
+    return np.sum(vect)
+
+
+if __name__ == '__main__':
+    import time
+    start = time.time()
+    print sum_of_vector_multiplied_by_adjacency(9)
+    print "Execution took {0} seconds".format(time.time() - start)

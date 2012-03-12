@@ -37,8 +37,10 @@ def bincast(val, new_type, bits=None):
     """
     type_map = {'ComplimentBinary' : ComplimentBinary,
                 'UnsignedBinary' : UnsignedBinary,
+                'SignedBinary' : SignedBinary,
                 'GrayCode' : GrayCode,
-                'SIFBinary' : SIFBinary}
+                'SIFBinary' : SIFBinary,
+                'InverseBinary' : InverseBinary}
 
     assert (isinstance(val, BaseBinary) or isinstance(val, int) or
             isinstance(val, str))
@@ -51,10 +53,14 @@ def bincast(val, new_type, bits=None):
         else:
             bits = BITSDEFAULT
 
+    # If an int or str is passed, we can't access an obj_type attr
     if isinstance(new_type, BaseBinary):
         new_type = new_type.obj_type
 
-    if new_type in type_map.keys():
+    # This is the case where we are performing mixed arithmatic.
+    if isinstance(val, BaseBinary) and val.obj_type != new_type:
+        return type_map[new_type](str(val), bits=bits)
+    elif new_type in type_map.keys():
         if isinstance(val, BaseBinary):
             return type_map[new_type](int(val), bits=bits)
         else:
@@ -249,9 +255,17 @@ class BaseBinary(object):
 
         self.obj_type = "BaseBinary"
 
+        if isinstance(val, int):
+            self.val = val
+        elif isinstance(val, str):
+            self.val = int(val, 2)
+        else:
+            raise BinLabError()
+
         # Not yet used
         self.endian = 'little'
 
+    @property
     def sign(self):
         return '0' if self.val >= 0 else '1'
 
@@ -330,7 +344,8 @@ class BaseBinary(object):
 
     @binlab_deco
     def __invert__(self):
-        return bincast(val= ~ int(self), new_type=self.obj_type, bits=self.bits)
+        new_rep = ''.join(['0' if x == '1' else '1' for x in str(self)])
+        return bincast(val=new_rep, new_type=self.obj_type, bits=self.bits)
 
     @binlab_deco
     def __add__(self, other):
@@ -414,24 +429,8 @@ class BaseBinary(object):
 
 class ComplimentBinary(BaseBinary):
     def __init__(self, val=0, bits=BITSDEFAULT):
-        BaseBinary.__init__(self, val=0, bits=8)
+        BaseBinary.__init__(self, val=val, bits=bits)
         self.obj_type = 'ComplimentBinary'
-
-        if type(val) == int:
-            self.val = val
-        # TODO This doesn't handle hex strings.
-        elif type(val) == str:
-            self.val = int(val, 2)
-            """
-            if val.startswith('0b') or val.startswith('-0b'):
-                val = int(val, 2)
-            elif val.startswith('0x') or val.startswith('-0x'):
-                val = int(val, 16)
-            else:
-                val = int(val)
-            """
-        else:
-            raise BinLabError()
 
         self.bits = bits  # This is done in super, but it will trigger a
                           # possible resize
@@ -463,7 +462,7 @@ class ComplimentBinary(BaseBinary):
 
     @bits.deleter
     def bits(self):
-        BaseBinary.bits(self)
+        del self._bits
 
     def _truncate(self):
         """Should be called ONLY from bits.setter. This takes the rightmost
@@ -479,11 +478,10 @@ class ComplimentBinary(BaseBinary):
         extend a value, I'm keeping track of everything with a base integer,
         so finding the binary representation in a more permissive base doesn't
         modify the integer at all."""
-
-        pass
+        BaseBinary._extend(self)
 
     def __str__(self):
-        if self.sign() == '0':
+        if self.sign == '0':
             rep = bin(self.val).lstrip('0b')
         else:
             rep = bin(self.val).lstrip('-0b')
@@ -491,12 +489,77 @@ class ComplimentBinary(BaseBinary):
             rep = rep.invert()
             rep = rep + 1
 
-        return "{rep:{sign}>{self.bits}}".format(rep=rep,
-                                                 self=self, sign=self.sign())
-
+        return "{rep:{self.sign}>{self.bits}}".format(rep=rep, self=self)
 
 
 class SignedBinary(BaseBinary):
+    def __init__(self, val=0, bits=BITSDEFAULT):
+        BaseBinary.__init__(self, val=val, bits=bits)
+        self.obj_type = "SignedBinary"
+
+        if isinstance(val, int):
+            self.val = val
+        elif isinstance(val, str):
+            # The default int() converter won't pick up on the fact that a
+            # value that starts with '1' is negative.
+            if len(val) == bits and val[0] == '1':
+                self.val = - int(val, 2)
+            else:
+                self.val = int(val, 2)
+        else:
+            raise BinLabError()
+
+        self.bits = bits
+
+    @property
+    def obj_type(self):
+        return self._obj_type
+
+    @obj_type.setter
+    def obj_type(self, new_val):
+        self._obj_type = new_val
+
+    @property
+    def bits(self):
+        return self._bits
+
+    @bits.setter
+    def bits(self, bits):
+        self._bits = bits
+        bit_len = len(str(self))
+        if bits > bit_len:
+            self._extend()
+        elif bits < bit_len:
+            self._truncate()
+
+    @bits.deleter
+    def bits(self):
+        del self._bits
+
+    def _truncate(self):
+        BaseBinary._truncate(self)
+        if self.val >= 0:
+            new_str_val = self.sign + str(self)[-self.bits + 1:]
+        else:
+            new_str_val = self.sign + (~ self)[-self.bits + 1:]
+
+        self.val = int(bincast(val=new_str_val, new_type=self.obj_type,
+                               bits=self.bits))
+
+    def _extend(self):
+        BaseBinary._extend(self)
+
+    def __str__(self):
+        if self.sign == '0':
+            rep = bin(self.val).lstrip('0b')[-self.bits + 1:]
+        else:
+            rep = bin(self.val).lstrip('-0b')[-self.bits + 1:]
+
+        return "{self.sign}{rep:0>{bits}}".format(rep=rep, self=self,
+                                                  bits=self.bits - 1)
+
+
+class InverseBinary(BaseBinary):
     pass
 
 
