@@ -1,6 +1,6 @@
 require "faceted.rb"
 
-def problem83
+def problem82
   m, m_dim = gimme_matrix
   prev_col = []
   (0..m_dim[1]).each do |y|
