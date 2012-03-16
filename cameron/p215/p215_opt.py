@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 from brick import *
+import time
 
 def p215(width, height):
     wall = []
@@ -46,4 +47,6 @@ def intersect(a, b):
     return False
 
 if __name__ == "__main__":
+    start = time.time()
     p215(32, 10)
+    print time.time() - start
