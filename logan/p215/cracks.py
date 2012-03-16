@@ -152,7 +152,8 @@ def sum_of_vector_multiplied_by_adjacency(power):
         print 'Working on: ' + str(i)
         vect = vect * my_matrix
 
-    return np.sum(vect)
+    return vect
+    #return np.sum(vect)
 
 
 if __name__ == '__main__':
