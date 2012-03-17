@@ -1,6 +1,17 @@
 #!/usr/bin/python
 from math import sqrt
 
+def first_n_primes(x):
+    prime_list = [2]
+    num = 3
+    while len(prime_list) < x:
+        check_prime(num, prime_list)
+        num += 2
+    return prime_list
+
+def nth_prime(x):
+    return first_n_primes(x)[-1]
+
 def primes_upto(x):
     prime_list = [2]
     num = 3
@@ -22,3 +33,6 @@ def check_prime(num, prime_list):
     #print ("%i is prime" % num)
     prime_list.append(num)
     return True
+
+print nth_prime(4)
+print first_n_primes(4)

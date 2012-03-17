@@ -6,7 +6,7 @@ def p225():
     for _ in range(100):
         x = seq[0] + seq[1] + seq[2]
         seq = seq[1:] + [x]
-        print ("x
+        print ("%i" % x),
         print divisors(x)
 
 def divisors(x):
