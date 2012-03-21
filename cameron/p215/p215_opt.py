@@ -10,6 +10,7 @@ def p215(width, height):
     adj = {k: [] for k in range(len(wall))}
     for i, row in enumerate(wall):
         for j, possible_row in enumerate(wall[i + 1:]):
+            j += i + 1
             if not intersect(row, possible_row):
                 adj[i] = adj[i] + [j]
                 adj[j] = adj[j] + [i]
