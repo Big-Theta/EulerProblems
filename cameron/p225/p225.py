@@ -59,5 +59,5 @@ def divisors(x):
 
 
 if __name__ == "__main__":
-    p225(7)
+    p225(2)
     #fib()
