@@ -8,17 +8,18 @@ def p225(depth):
     for x in range(depth):
         seqs.append([0] * 3)
 
-    for _ in range(40):
+    for _ in range(50):
         next_term = seqs[0][0] + seqs[0][1] + seqs[0][2]
         seqs[0] = seqs[0][1:] + [next_term]
-        print ("%11i" % seqs[0][-1]),
-        big, small = divmod(seqs[0][-1], 27)
-        print ("%11i %11i" % (big * 27 + small, small)),
+        print ("%25i" % seqs[0][-1]),
+        big, small = divmod(seqs[0][-1], 9)
+        #print ("%11i %11i" % (big * 27 + small, small)),
+        print ("%11i" % small),
         for i, s in enumerate(seqs[1:]):
             i += 1
             seqs[i] = seqs[i][1:] + [seqs[i - 1][-1] - seqs[i - 1][-2]]
-            print ("%11i" % seqs[i][-1]),
-        divs = divisors(next_term)
+            #print ("%11i" % seqs[i][-1]),
+        #divs = divisors(next_term)
         #print seq[-1],
         #print seq[-1] - seq[-2]
         #print divs
