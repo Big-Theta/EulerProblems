@@ -2,65 +2,60 @@
 
 from primes import *
 
-def p225(depth):
-    seqs = [[1, 1, 1]]
-    explicit_seq = [0, 0, 0]
-    for x in range(depth):
-        seqs.append([0] * 3)
+def p225_old(answers_needed):
+    seq = [1, 1, 1]
+    cur_divisor = 17
+    answers_found = 0
 
-    for _ in range(50):
-        next_term = seqs[0][0] + seqs[0][1] + seqs[0][2]
-        seqs[0] = seqs[0][1:] + [next_term]
-        print ("%25i" % seqs[0][-1]),
-        big, small = divmod(seqs[0][-1], 9)
-        #print ("%11i %11i" % (big * 27 + small, small)),
-        print ("%11i" % small),
-        for i, s in enumerate(seqs[1:]):
-            i += 1
-            seqs[i] = seqs[i][1:] + [seqs[i - 1][-1] - seqs[i - 1][-2]]
-            #print ("%11i" % seqs[i][-1]),
-        #divs = divisors(next_term)
-        #print seq[-1],
-        #print seq[-1] - seq[-2]
-        #print divs
-        print ""
+    remainders = [1, 1, 1]
+    while answers_found < answers_needed:
+        seq = get_seq((len(remainders) + 1) * 2, seq)
+        remainders += [seq[len(remainders)] % cur_divisor]
+        if remainders[-1] == 0:
+            #print "found a dud %i" % cur_divisor
+            cur_divisor += 2
+            remainders = [1, 1, 1]
+        elif remainders[-3:] == [1, 1, 1]:
+            #print "gets here!"
+            target = remainders[:-3]
+            possible_match = [x % cur_divisor for x in seq[len(target):len(target) * 2]]
+            #print target
+            #print possible_match
+            if target == possible_match:
+                answers_found += 1
+                print "Yay, found %i, divisor number %i" % (cur_divisor, answers_found)
+                cur_divisor += 2
+                remainders = [1, 1, 1]
+    print cur_divisor
 
-def fib():
-    seq = [0, 1]
-    for _ in range(20):
-        seq = seq[1:] + [seq[0] + seq[1]]
-        print seq[1]
+def p225(answers_needed):
+    seq = [1, 1, 1]
+    cur_divisor = 17
+    answers_found = 0
 
-def p225_maybe():
-    primes = first_n_primes(124)
-    primes = primes[1:]
-    cubes = [x**3 for x in primes]
-    answer = []
-    for i, x in enumerate(cubes):
-        for y in range(1, 124):
-            answer.append(x * ((y * 2) - 1))
-    answer = list(set(answer))
-    answer.sort()
-    for x in answer:
-        if x % 2 == 0:
-            print "You fucked up"
-    print answer[0]
-    print answer[0:126]
-    print answer[0:10]
+    remainders = [1, 1, 1]
+    cur_index = 3
+    while answers_found < answers_needed:
+        seq = get_seq(cur_index + 1, seq)
+        remainders = remainders[1:] + [seq[cur_index] % cur_divisor]
+        if remainders[-1] == 0:
+            #print "found a dud %i" % cur_divisor
+            cur_divisor += 2
+            remainders = [1, 1, 1]
+        elif remainders == [1, 1, 1] and cur_index > 3:
+            answers_found += 1
+            print "Yay, found %i, divisor number %i" % (cur_divisor, answers_found)
+            cur_divisor += 2
+            remainders = [1, 1, 1]
+            cur_index = 2
+        cur_index += 1
+    print cur_divisor
 
-def divisors(x):
-    ans = []
-    i = 2
-    while x > 1:
-        if x % i != 0:
-            #print x, i
-            i += 1
-        else:
-            ans.append(i)
-            x /= i
-    return ans
-
+def get_seq(length, seq):
+    while len(seq) < length:
+        seq += [seq[-3] + seq[-2] + seq[-1]]
+        #print seq[-1]
+    return seq
 
 if __name__ == "__main__":
-    p225(0)
-    #fib()
+    p225(124)
