@@ -28,7 +28,7 @@ CXXFLAGS += -g -Wall -Wextra
 
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
-TESTS = ArrayMainipulationTest
+TESTS = ArrayManipulationTest
 
 # All Google Test headers.  Usually you shouldn't change this
 # definition.
@@ -80,6 +80,6 @@ unittest.o : $(USER_DIR)/test/unittest.cpp \
              $(USER_DIR)/definitions.h $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/test/unittest.cpp
 
-ArrayMainipulationTest : utilities.o unittest.o gtest_main.a
+ArrayManipulationTest : utilities.o unittest.o gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -pthread $^ -o $@
 
