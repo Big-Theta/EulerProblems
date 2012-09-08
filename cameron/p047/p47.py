@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 from mr import *
+from decbingray import *
 
 def mult_total(arr):
     return_val = 1
@@ -27,32 +28,58 @@ def get_factors(primes):
             power += 1
             f = p ** power
     factors.sort()
+    return factors
     #print factors
 
-def iterate(factors, which_f, pows):
-    
+def bit_count(num):
+    count = 0
+    while (num):
+        num &= num - 1
+        count += 1
+    return count
+
+def factor_indexes(which_f):
+    a, b = divmod(which_f, 2)
+    i = 0
+    indexes = []
+    while a:
+        if b:
+            indexes += [i]
+        i += 1
+        a, b = divmod(a, 2)
+    indexes += [i]
+    print indexes
+    return indexes
+
+def valid_ans(factors, which_f):
+    return True
+
+def get_next_ans(factors, which_f):
+    which_f += 1
+    while bit_count(which_f) != 4 or not valid_ans(factors, which_f):
+        which_f += 1
+    ans = 1
+    #print bin(which_f)
+    indexes = factor_indexes(which_f)
+    for i in indexes:
+        ans *= factors[i]
+    return [ans, which_f]
 
 def p47():
     primes = get_primes(10000)
     factors = get_factors(primes)
     ans = [0, 0, 0, 0]
 
-    which_f = [0, 1, 2, 3]
-    done = false
-    while which_f[3] < len(factors) || not done:
-        ans = ans[1:] + [1]
-        for i in which_f:
-            ans[3] *= factors[which_f[i]]
-
-        iterate(factors, which_f, pows)
-        if (ans[0] + 1 == ans[1] && ans[1] + 1 == ans[2] and ans[2] + 1 == ans[3]):
+    which_f = 0b10111
+    print "num_bits = %i" % bit_count(which_f)
+    done = False
+    while not done and which_f != 0b1111:
+        #print which_f
+        next_ans, which_f = get_next_ans(factors, which_f)
+        ans = ans[1:] + [next_ans]
+        if (ans[0] + 1 == ans[1] and ans[1] + 1 == ans[2] and ans[2] + 1 == ans[3]):
             done = True
     print ans[0]
-
-    #ans2 = mult_total([primes[index2[i]] ** pow2[i] for i in range(4)])
-    print pows
-    print ans
-    #print ans2
 
 if __name__ == "__main__":
     p47()
