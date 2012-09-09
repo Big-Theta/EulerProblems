@@ -57,7 +57,7 @@ def factor(val):
             return factors
 
 def solver():
-    VALS = 3
+    VALS = 4
     x = [[i, None] for i in range(VALS)]
     while 1:
         new_val = x[VALS - 1][0] + 1

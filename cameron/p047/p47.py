@@ -1,7 +1,16 @@
 #!/usr/bin/python
 
-from mr import *
-from decbingray import *
+#anwer is 134043
+
+from num_tools import *
+
+def test_gray_upto(x):
+    for i in range(x):
+        gray = bin2gray(i)
+        if bit_count(gray) == 4:
+            print bin(gray)
+    #print gray2bin("1010101010101")
+
 
 def mult_total(arr):
     return_val = 1
@@ -9,16 +18,7 @@ def mult_total(arr):
         return_val *= i
     return return_val
 
-def get_primes(total_primes):
-    prime_test_num = 3
-    primes = []
-    while len(primes) < total_primes:
-        if is_probable_prime(prime_test_num):
-            primes += [prime_test_num]
-        prime_test_num += 2
-    return primes
-
-def get_factors(primes):
+def get_all_factors(primes):
     factors = []
     for p in primes:
         power = 1
@@ -66,8 +66,8 @@ def get_next_ans(factors, which_f):
     return [ans, which_f]
 
 def p47():
-    primes = get_primes(10000)
-    factors = get_factors(primes)
+    primes = get_n_primes(10000)
+    factors = get_all_factors(primes)
     ans = [0, 0, 0, 0]
 
     which_f = 0b10111
@@ -81,5 +81,40 @@ def p47():
             done = True
     print ans[0]
 
+def get_factors_47(num, primes):
+    i = 0
+    ans = []
+    if len(primes) == 0:
+        primes += get_n_primes(1)
+    while num > primes[-1]:
+        print "extending primes list"
+        primes = get_n_primes(len(primes) * 2)[len(primes):]
+    while num > 0 and i < len(primes) and len(ans) < 5:
+        test_num, r = divmod(num, primes[i])
+        if r:
+            i += 1
+        else:
+            num = test_num
+            if not primes[i] in ans:
+                ans += [primes[i]]
+    return ans
+
+def p47_easy():
+    primes = get_n_primes(100000)
+    ans = 0
+    in_a_row = 0
+    while in_a_row < 4:
+        if len(get_factors_47(ans, primes)) == 4:
+            in_a_row += 1
+            print ans
+        else:
+            in_a_row = 0
+        ans += 1
+    print ans - 4
+
+
+
 if __name__ == "__main__":
-    p47()
+    p47_easy()
+    #print get_all_factors(get_n_primes(40))
+    #p47()
