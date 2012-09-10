@@ -3,6 +3,7 @@
 #anwer is 134043
 
 from num_tools import *
+from math import *
 
 def test_gray_upto(x):
     for i in range(x):
@@ -82,37 +83,41 @@ def p47():
     print ans[0]
 
 def get_factors_47(num, primes):
+    if is_probable_prime(num):
+        primes += [num]
+        return [num]
+    max_factor = num / 2
     i = 0
     ans = []
-    if len(primes) == 0:
-        primes += get_n_primes(1)
-    while num > primes[-1]:
-        print "extending primes list"
-        primes = get_n_primes(len(primes) * 2)[len(primes):]
-    while num > 0 and i < len(primes) and len(ans) < 5:
-        test_num, r = divmod(num, primes[i])
-        if r:
+    while num > 1:
+        test_num, remainder = divmod(num, primes[i])
+        #if primes[i] > max_factor:
+            #print primes[i], max_factor
+        #    return []
+        if remainder > 0:
             i += 1
         else:
             num = test_num
             if not primes[i] in ans:
                 ans += [primes[i]]
+                #print ans
+    #print "should get here like all the time"
     return ans
 
 def p47_easy():
-    primes = get_n_primes(100000)
-    ans = 0
     in_a_row = 0
-    while in_a_row < 4:
-        if len(get_factors_47(ans, primes)) == 4:
+    primes = []
+    num = 2
+    while in_a_row < 4:# and num < 200:
+        #print len(get_factors_47(num, primes))
+        if len(get_factors_47(num, primes)) == 4:
             in_a_row += 1
-            print ans
         else:
             in_a_row = 0
-        ans += 1
-    print ans - 4
-
-
+        num += 1
+    #print get_factors_47(134043, primes)
+#anwer is 134043
+    print num - 4
 
 if __name__ == "__main__":
     p47_easy()
