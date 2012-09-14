@@ -1,0 +1,170 @@
+UID        PID  PPID  C STIME TTY          TIME CMD
+root         1     0  0 19:39 ?        00:00:00 /sbin/init
+root         2     0  0 19:39 ?        00:00:00 [kthreadd]
+root         3     2  0 19:39 ?        00:00:00 [ksoftirqd/0]
+root         6     2  0 19:39 ?        00:00:00 [migration/0]
+root         7     2  0 19:39 ?        00:00:00 [watchdog/0]
+root         8     2  0 19:39 ?        00:00:00 [migration/1]
+root        10     2  0 19:39 ?        00:00:00 [ksoftirqd/1]
+root        12     2  0 19:39 ?        00:00:00 [watchdog/1]
+root        13     2  0 19:39 ?        00:00:00 [cpuset]
+root        14     2  0 19:39 ?        00:00:00 [khelper]
+root        15     2  0 19:39 ?        00:00:00 [kdevtmpfs]
+root        16     2  0 19:39 ?        00:00:00 [netns]
+root        18     2  0 19:39 ?        00:00:00 [sync_supers]
+root        19     2  0 19:39 ?        00:00:00 [bdi-default]
+root        20     2  0 19:39 ?        00:00:00 [kintegrityd]
+root        21     2  0 19:39 ?        00:00:00 [kblockd]
+root        22     2  0 19:39 ?        00:00:00 [ata_sff]
+root        23     2  0 19:39 ?        00:00:00 [khubd]
+root        24     2  0 19:39 ?        00:00:00 [md]
+root        26     2  0 19:39 ?        00:00:00 [khungtaskd]
+root        27     2  0 19:39 ?        00:00:00 [kswapd0]
+root        28     2  0 19:39 ?        00:00:00 [ksmd]
+root        29     2  0 19:39 ?        00:00:00 [khugepaged]
+root        30     2  0 19:39 ?        00:00:00 [fsnotify_mark]
+root        31     2  0 19:39 ?        00:00:00 [ecryptfs-kthrea]
+root        32     2  0 19:39 ?        00:00:00 [crypto]
+root        40     2  0 19:39 ?        00:00:00 [kthrotld]
+root        48     2  0 19:39 ?        00:00:00 [scsi_eh_0]
+root        49     2  0 19:39 ?        00:00:00 [scsi_eh_1]
+root        50     2  0 19:39 ?        00:00:00 [scsi_eh_2]
+root        52     2  0 19:39 ?        00:00:00 [scsi_eh_3]
+root        53     2  0 19:39 ?        00:00:00 [scsi_eh_4]
+root        75     2  0 19:39 ?        00:00:00 [devfreq_wq]
+root       217     2  0 19:39 ?        00:00:00 [firewire]
+root       238     2  0 19:39 ?        00:00:00 [jbd2/sda1-8]
+root       239     2  0 19:39 ?        00:00:00 [ext4-dio-unwrit]
+root       326     1  0 19:39 ?        00:00:00 upstart-udev-bridge --daemon
+root       343     1  0 19:39 ?        00:00:00 /sbin/udevd --daemon
+root       503   343  0 19:39 ?        00:00:00 /sbin/udevd --daemon
+root       504   343  0 19:39 ?        00:00:00 /sbin/udevd --daemon
+root       544     2  0 19:39 ?        00:00:00 [cfg80211]
+root       555     2  0 19:39 ?        00:00:00 [kmemstick]
+root       559     2  0 19:39 ?        00:00:00 [r592_io]
+root       566     2  0 19:39 ?        00:00:00 [r852]
+root       567     2  0 19:39 ?        00:00:00 [kpsmoused]
+root       700     1  0 19:39 ?        00:00:00 upstart-socket-bridge --daemon
+root       727     2  0 19:39 ?        00:00:00 [hd-audio0]
+root       754     1  0 19:39 ?        00:00:00 /usr/sbin/sshd -D
+syslog     771     1  0 19:39 ?        00:00:00 rsyslogd -c5
+102        779     1  0 19:39 ?        00:00:01 dbus-daemon --system --fork --activation=upstart
+root       788     1  0 19:39 ?        00:00:00 /usr/sbin/modem-manager
+root       789     1  0 19:39 ?        00:00:00 /usr/sbin/bluetoothd
+root       824     1  0 19:39 ?        00:00:00 NetworkManager
+avahi      825     1  0 19:39 ?        00:00:00 avahi-daemon: running [Minion.local]
+avahi      827   825  0 19:39 ?        00:00:00 avahi-daemon: chroot helper
+root       838     2  0 19:39 ?        00:00:00 [krfcommd]
+root       867     1  0 19:39 ?        00:00:00 /usr/lib/policykit-1/polkitd --no-debug
+root       885     1  0 19:39 tty4     00:00:00 /sbin/getty -8 38400 tty4
+root       892     1  0 19:39 tty5     00:00:00 /sbin/getty -8 38400 tty5
+root       902     1  0 19:39 tty2     00:00:00 /sbin/getty -8 38400 tty2
+root       903     1  0 19:39 tty3     00:00:00 /sbin/getty -8 38400 tty3
+root       905     1  0 19:39 tty6     00:00:00 /sbin/getty -8 38400 tty6
+kernoops   906     1  0 19:39 ?        00:00:00 /usr/sbin/kerneloops
+root       918     1  0 19:39 ?        00:00:00 acpid -c /etc/acpi/events -s /var/run/acpid.socket
+root       923     1  0 19:39 ?        00:00:00 /usr/sbin/irqbalance
+root       925     1  0 19:39 ?        00:00:00 cron
+daemon     926     1  0 19:39 ?        00:00:00 atd
+whoopsie   976     1  0 19:39 ?        00:00:00 whoopsie
+root      1085     1  0 19:39 ?        00:00:00 lightdm
+root      1090     1  0 19:39 ?        00:00:00 /usr/sbin/cupsd -F
+root      1103     2  0 20:38 ?        00:00:00 [kworker/u:1]
+root      1155  1085  3 19:39 tty7     00:02:03 /usr/bin/X :0 -auth /var/run/lightdm/root/:0 -nolisten tcp vt7 -novtswitch -background none
+root      1168     1  0 19:39 tty1     00:00:00 /sbin/getty -8 38400 tty1
+root      1175     2  0 19:39 ?        00:00:00 [flush-8:0]
+root      1182     1  0 19:39 ?        00:00:00 /usr/lib/accountsservice/accounts-daemon
+root      1199     1  0 19:39 ?        00:00:00 /usr/sbin/console-kit-daemon --no-daemon
+root      1295     2  0 20:38 ?        00:00:00 [kworker/0:1]
+root      1312     1  0 19:39 ?        00:00:01 /usr/lib/upower/upowerd
+root      1320     2  0 20:38 ?        00:00:00 [kworker/0:2]
+colord    1481     1  0 19:39 ?        00:00:00 /usr/lib/x86_64-linux-gnu/colord/colord
+root      1484  1085  0 19:39 ?        00:00:00 lightdm --session-child 12 19
+rtkit     1517     1  0 19:39 ?        00:00:00 /usr/lib/rtkit/rtkit-daemon
+root      1524     2  0 19:39 ?        00:00:20 [irq/17-b43]
+root      1528     1  0 19:39 ?        00:00:00 /sbin/wpa_supplicant -B -P /run/sendsigs.omit.d/wpasupplicant.pid -u -s -O /var/run/wpa_supplicant
+root      1531   824  0 19:39 ?        00:00:00 /sbin/dhclient -d -4 -sf /usr/lib/NetworkManager/nm-dhcp-client.action -pf /var/run/sendsigs.omit.d/network-manager.dhclient-wlan0.pid -lf /var/lib/dhcp/dhclient-05c87c17-cf4f-49f3-93d1-763aa3375016-wlan0.lease -cf /var/run/nm-dhclient-wlan0.conf wlan0
+nobody    1556   824  0 19:39 ?        00:00:00 /usr/sbin/dnsmasq --no-resolv --keep-in-foreground --no-hosts --bind-interfaces --pid-file=/var/run/sendsigs.omit.d/network-manager.dnsmasq.pid --listen-address=127.0.0.1 --conf-file=/var/run/nm-dns-dnsmasq.conf --cache-size=0 --proxy-dnssec
+cevans    1778     1  0 19:44 ?        00:00:00 /usr/bin/gnome-keyring-daemon --daemonize --login
+cevans    1789  1484  0 19:44 ?        00:00:00 gnome-session --session=ubuntu
+cevans    1824  1789  0 19:44 ?        00:00:00 /usr/bin/ssh-agent /usr/bin/dbus-launch --exit-with-session gnome-session --session=ubuntu
+cevans    1827     1  0 19:44 ?        00:00:00 /usr/bin/dbus-launch --exit-with-session gnome-session --session=ubuntu
+cevans    1828     1  0 19:44 ?        00:00:01 //bin/dbus-daemon --fork --print-pid 5 --print-address 7 --session
+cevans    1841  1789  0 19:44 ?        00:00:02 /usr/lib/gnome-settings-daemon/gnome-settings-daemon
+cevans    1847     1  0 19:44 ?        00:00:00 /usr/lib/gvfs/gvfsd
+cevans    1849     1  0 19:44 ?        00:00:00 /usr/lib/gvfs//gvfs-fuse-daemon -f /home/cevans/.gvfs
+cevans    1855  1789  5 19:44 ?        00:02:58 compiz
+cevans    1858     1  0 19:44 ?        00:00:00 /usr/lib/x86_64-linux-gnu/gconf/gconfd-2
+cevans    1865  1841  0 19:44 ?        00:00:01 syndaemon -i 0.5 -K -R
+cevans    1868     1  0 19:44 ?        00:00:00 /usr/lib/gvfs/gvfsd-metadata
+cevans    1872     1  0 19:44 ?        00:00:00 /usr/bin/pulseaudio --start --log-target=syslog
+cevans    1875  1789  0 19:44 ?        00:00:04 nautilus -n
+cevans    1876  1789  0 19:44 ?        00:00:00 /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1
+cevans    1877  1789  0 19:44 ?        00:00:00 /usr/lib/gnome-settings-daemon/gnome-fallback-mount-helper
+cevans    1878  1789  0 19:44 ?        00:00:00 nm-applet
+cevans    1885  1789  0 19:44 ?        00:00:00 bluetooth-applet
+cevans    1896     1  0 19:44 ?        00:00:00 /usr/lib/gvfs/gvfs-gdu-volume-monitor
+root      1898     1  0 19:44 ?        00:00:00 /usr/lib/udisks/udisks-daemon
+root      1899  1898  0 19:44 ?        00:00:00 udisks-daemon: polling /dev/sr0
+cevans    1905     1  0 19:44 ?        00:00:00 /usr/lib/gvfs/gvfs-gphoto2-volume-monitor
+cevans    1907     1  0 19:44 ?        00:00:00 /usr/lib/gvfs/gvfs-afc-volume-monitor
+cevans    1912     1  0 19:44 ?        00:00:00 /usr/lib/gvfs/gvfsd-trash --spawner :1.6 /org/gtk/gvfs/exec_spaw/0
+cevans    1918  1872  0 19:44 ?        00:00:00 /usr/lib/pulseaudio/pulse/gconf-helper
+cevans    1926     1  0 19:44 ?        00:00:01 /usr/lib/bamf/bamfdaemon
+cevans    1931     1  0 19:44 ?        00:00:00 /usr/lib/gvfs/gvfsd-burn --spawner :1.6 /org/gtk/gvfs/exec_spaw/1
+cevans    1932  1855  0 19:44 ?        00:00:00 /bin/sh -c /usr/bin/compiz-decorator
+cevans    1933  1932  0 19:44 ?        00:00:01 /usr/bin/gtk-window-decorator
+cevans    1938     1  0 19:44 ?        00:00:02 /usr/lib/unity/unity-panel-service
+cevans    1948     1  0 19:44 ?        00:00:00 /usr/lib/indicator-application/indicator-application-service
+cevans    1949     1  0 19:44 ?        00:00:00 /usr/lib/indicator-messages/indicator-messages-service
+cevans    1950     1  0 19:44 ?        00:00:00 /usr/lib/indicator-sound/indicator-sound-service
+cevans    1951     1  0 19:44 ?        00:00:00 /usr/lib/indicator-datetime/indicator-datetime-service
+cevans    1954     1  0 19:44 ?        00:00:00 /usr/lib/indicator-session/indicator-session-service
+cevans    1955     1  0 19:44 ?        00:00:00 /usr/lib/indicator-printers/indicator-printers-service
+cevans    1970     1  0 19:44 ?        00:00:00 /usr/lib/geoclue/geoclue-master
+cevans    2001     1  0 19:44 ?        00:00:01 /usr/lib/indicator-appmenu/hud-service
+cevans    2004     1  0 19:44 ?        00:00:00 /usr/lib/ubuntu-geoip/ubuntu-geoip-provider
+cevans    2024  1789  0 19:44 ?        00:00:00 /usr/lib/gnome-disk-utility/gdu-notification-daemon
+cevans    2028  1789  0 19:45 ?        00:00:00 telepathy-indicator
+cevans    2034     1  0 19:45 ?        00:00:00 /usr/lib/telepathy/mission-control-5
+cevans    2039     1  0 19:45 ?        00:00:00 /usr/lib/gnome-online-accounts/goa-daemon
+cevans    2044  1789  0 19:45 ?        00:00:00 gnome-screensaver
+cevans    2045  1789  0 19:45 ?        00:00:00 zeitgeist-datahub
+cevans    2053     1  0 19:45 ?        00:00:00 /usr/bin/zeitgeist-daemon
+cevans    2059     1  0 19:45 ?        00:00:00 /usr/lib/zeitgeist/zeitgeist-fts
+cevans    2067  2059  0 19:45 ?        00:00:00 /bin/cat
+cevans    2079     1  0 19:45 ?        00:00:00 /usr/lib/unity-lens-applications/unity-applications-daemon
+cevans    2081     1  0 19:45 ?        00:00:00 /usr/lib/unity-lens-files/unity-files-daemon
+cevans    2084     1  0 19:45 ?        00:00:00 /usr/bin/python /usr/lib/unity-lens-video/unity-lens-video
+cevans    2085     1  0 19:45 ?        00:00:00 /usr/lib/unity-lens-music/unity-music-daemon
+cevans    2128     1  0 19:45 ?        00:00:00 /usr/lib/unity-lens-music/unity-musicstore-daemon
+cevans    2140     1  0 19:45 ?        00:00:00 /usr/lib/dconf/dconf-service
+cevans    2148  1789  0 19:45 ?        00:00:00 update-notifier
+root      2154     2  0 20:39 ?        00:00:00 [kworker/1:0]
+cevans    2167     1  0 19:45 ?        00:00:00 /usr/bin/python /usr/lib/unity-scope-video-remote/unity-scope-video-remote
+root      2190     1  0 19:45 ?        00:00:00 /usr/bin/python /usr/lib/system-service/system-service-d
+cevans    2255     1  0 19:46 ?        00:00:00 /home/cevans/Programming/installs/eclipse/eclipse
+cevans    2269  2255  4 19:46 ?        00:02:19 /usr/bin/java -Xms40m -Xmx512m -XX:MaxPermSize=256m -jar /home/cevans/Programming/installs/eclipse//plugins/org.eclipse.equinox.launcher_1.3.0.v20120522-1813.jar -os linux -ws gtk -arch x86_64 -showsplash /home/cevans/Programming/installs/eclipse//plugins/org.eclipse.platform_4.2.0.v201206081400/splash.bmp -launcher /home/cevans/Programming/installs/eclipse/eclipse -name Eclipse --launcher.library /home/cevans/Programming/installs/eclipse//plugins/org.eclipse.equinox.launcher.gtk.linux.x86_64_1.1.200.v20120522-1813/eclipse_1502.so -startup /home/cevans/Programming/installs/eclipse//plugins/org.eclipse.equinox.launcher_1.3.0.v20120522-1813.jar --launcher.overrideVmargs -exitdata 0 -vm /usr/bin/java -vmargs -Xms40m -Xmx512m -XX:MaxPermSize=256m -jar /home/cevans/Programming/installs/eclipse//plugins/org.eclipse.equinox.launcher_1.3.0.v20120522-1813.jar
+cevans    2295  1789  0 19:46 ?        00:00:00 /usr/lib/deja-dup/deja-dup/deja-dup-monitor
+cevans    2325     1  1 19:47 ?        00:00:44 /usr/lib/firefox/firefox
+cevans    2340     1  0 19:47 ?        00:00:00 /usr/lib/at-spi2-core/at-spi-bus-launcher
+cevans    2444     1  0 19:55 ?        00:00:21 /usr/bin/gnome-terminal -x byobu-launcher
+cevans    2449  2444  0 19:55 ?        00:00:00 gnome-pty-helper
+cevans    2450  2444  0 19:55 pts/1    00:00:00 tmux -2 -f /usr/share/byobu/profiles/tmuxrc new-session /usr/bin/byobu-shell
+cevans    2475     1  0 19:55 ?        00:00:14 tmux -2 -f /usr/share/byobu/profiles/tmuxrc new-session /usr/bin/byobu-shell
+cevans    2476  2475  0 19:55 pts/2    00:00:00 sh -c /usr/bin/byobu-shell
+cevans    2480  2476  0 19:55 pts/2    00:00:00 /bin/bash
+cevans    2583  3335  0 20:40 pts/3    00:00:00 ps -ef
+cevans    3334  2475  0 19:56 pts/3    00:00:00 sh -c /bin/bash
+cevans    3335  3334  0 19:56 pts/3    00:00:00 /bin/bash
+cevans    3749  2480  0 19:56 pts/2    00:00:02 vi p104.py
+cevans    5006  2475  0 19:58 pts/4    00:00:00 sh -c /bin/bash
+cevans    5007  5006  0 19:58 pts/4    00:00:00 /bin/bash
+cevans    5075  5007  0 19:58 pts/4    00:00:00 python
+lp       10084  1090  0 20:05 ?        00:00:00 /usr/lib/cups/notifier/dbus dbus:// 
+root     23898     2  0 20:25 ?        00:00:00 [kworker/1:1]
+root     24937     2  0 20:26 ?        00:00:01 [kworker/u:0]
+root     26062     2  0 20:28 ?        00:00:01 [kworker/0:0]
+root     27775     2  0 20:30 ?        00:00:00 [kworker/1:3]
+root     27982     2  0 20:30 ?        00:00:01 [kworker/0:3]
+root     29236     2  0 20:32 ?        00:00:01 [kworker/u:2]
