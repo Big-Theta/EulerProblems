@@ -4,15 +4,6 @@
 from mr import *
 from num_tools import *
 from itertools import *
-"""
-def tuple_to_int(num):
-    int(''.join(num))
-    ans = 0
-    for c in num:
-        ans *= 10
-        ans += int(c)
-    return ans
-"""
 
 def p41():
     num = "7654321"
