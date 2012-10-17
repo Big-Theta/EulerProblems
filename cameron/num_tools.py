@@ -39,7 +39,7 @@ def is_pandigital(num):
     while num > 0:
         num, r = divmod(num, 10)
         digits[r] += 1
-    if max(digits) != 1:
+    if max(digits) != 1 or digits[0] > 0:
         return False
     elif min(digits[1:]) == 1:
         return True
