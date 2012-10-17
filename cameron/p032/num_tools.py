@@ -16,6 +16,14 @@ def get_n_primes(total_primes):
         prime_test_num += 1
     return primes
 
+def gen_prime():
+    yield 2
+    p = 3
+    while True:
+        if is_probable_prime(p):
+            yield p
+        p += 2
+
 
 """
 returns graycode of given num
@@ -31,7 +39,7 @@ def is_pandigital(num):
     while num > 0:
         num, r = divmod(num, 10)
         digits[r] += 1
-    if max(digits) != 1:
+    if max(digits) != 1 or digits[0] > 0:
         return False
     elif min(digits[1:]) == 1:
         return True
