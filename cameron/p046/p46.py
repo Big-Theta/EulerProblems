@@ -9,14 +9,27 @@ def gen_square():
         yield i * i
         i += 1
 
-def p46(roof):
-    squares = [gen_squares()]
-    primes = get_n_primes(roof)
-    print primes[-1]
-    print "Happy"
-    test_num = 3
-    
+def p46():
+    sg = gen_square()
+    pg = gen_prime()
+    squares = [sg.next()]
+    primes = [2]
+    test_num = 1
+    found = True
+    while found:
+        test_num += 2
+        found = False
+        while test_num > squares[-1]:
+            squares += [sg.next()]
+        if is_probable_prime(test_num):
+            primes += [test_num]
+            found = True
+        else:
+            for s in squares:
+                if (test_num - (2 * s)) in primes:
+                    found = True
+                    break
+    return test_num
 
 if __name__ == "__main__":
-    print x2squares_upto(100)
-    #p46(10000)
+    print p46()

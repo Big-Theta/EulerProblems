@@ -16,6 +16,14 @@ def get_n_primes(total_primes):
         prime_test_num += 1
     return primes
 
+def gen_prime():
+    yield 2
+    p = 3
+    while True:
+        if is_probable_prime(p):
+            yield p
+        p += 2
+
 
 """
 returns graycode of given num
