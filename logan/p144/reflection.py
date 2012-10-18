@@ -1,5 +1,13 @@
 import math as m
 
+
+def clean_angle(angle):
+    mod_2pi = m.radians(m.degrees(angle))
+    if mod_2pi < 0:
+        mod_2pi += 2 * m.pi
+    return mod_2pi
+
+
 class Beam(object):
     def __init__(self, point):
         """
@@ -36,7 +44,7 @@ class Beam(object):
 
     def _derive_next_slope(self, new_beam):
         """
-        This has NOT been checked.
+        FIXME: This code does NOT work.
 
         The tangent slope is given: -4x/y.
         We can derive the angle of this tangent using the atan function.  The
@@ -52,10 +60,18 @@ class Beam(object):
 
         """
         tan_slope = -4 * self.end[0] / self.end[1]  # Given
-        tan_angle = m.atan(tan_slope)
-        difference = tan_angle - self.angle
-        new_angle = self.angle + 2 * difference
+        tan_angle = clean_angle(m.atan(tan_slope))
+        difference = clean_angle(tan_angle - self.angle)
+        new_angle = clean_angle(self.angle + 2 * difference)
         new_slope = m.tan(new_angle)
+
+        other_difference = clean_angle(tan_angle + self.angle)
+        other_angle = clean_angle(self.angle + 2 * other_difference)
+        other_slope = m.tan(other_angle)
+        print other_slope, new_slope
+        for k, v in locals().items():
+            print k, v
+        assert other_slope == new_slope
 
         '''
         for k, v in locals().items():
@@ -84,7 +100,8 @@ class Beam(object):
         either (-5, 0) or (5, 0), where the ellipse intersects the X axis. If
         the first point is in the bottom half, and the line's slope creates a
         line that is "beneath" this constructed slope, then we need to take the
-        Negative version. A similar test will work if the first point is above the X axis. However, it might be better to just solve both the positive
+        Negative version. A similar test will work if the first point is above
+        the X axis. However, it might be better to just solve both the positive
         and the negative version, and at the end, we should be able to isolate
         the correct solutions. See below for a discussion on that.
 
