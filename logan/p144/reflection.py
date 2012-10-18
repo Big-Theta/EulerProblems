@@ -1,24 +1,35 @@
 import math as m
 
 class Beam(object):
-    def __init__(self, x, y):
-        self.start_x, self.start_y = x, y
-        self.end_x = self.end_y = self.slope = self.angle = None
+    def __init__(self, point):
+        """
+        Initializes the instance attributes that will eventually
+        be set. start and end are assumed to be 2-tuples representing x, y coordinates.
+        Slope is the rise over the run for the current line (or equivalently, the
+        (start[1] - end[1]) / (start[0] - end[0])
+        """
+        self.start = point
+        self.end = None
+        self.slope = None
+        self.angle = None
 
     def info(self):
-        print "Starting point:", self.start_x, self.start_y
-        print "Ending point:  ", self.end_x, self.end_y
+        print "Starting point:", self.start
+        print "Ending point:  ", self.end
         print "Slope:         ", self.slope
+        print "Angle:         ", self.angle
 
-    def set_end(self, x, y):
-        self.end_x, self.end_y = x, y
+    def set_end(self, new_point):
+        self.end = new_point
 
     def set_slope(self, slope):
+        """Sets the slope and derives the angle for this beam."""
         self.slope = slope
         self.angle = m.atan(self.slope)
 
     def get_next_beam(self):
-        new_beam = Beam(self.end_x, self.end_y)
+        """Derives the next beam using the information from the current beam."""
+        new_beam = Beam(self.end)
         self._derive_next_slope(new_beam)
         self._derive_next_end(new_beam)
         return new_beam
@@ -27,16 +38,26 @@ class Beam(object):
         """
         This has NOT been checked.
 
+        The tangent slope is given: -4x/y.
+        We can derive the angle of this tangent using the atan function.  The
+        angle for the new will be calculated by taking twice the difference in
+        the angles and adding this quantity to the angle of the beam. The idea
+        here is that once the first beam bounces, we could look at the original
+        path and then the new path.  The tangent line will be halfway between
+        these two paths.  Note: there are two possible differences in angles...
+        a big difference and a small difference. The angle for the new beam
+        should be the same regardless of our choice (big or small difference).
+
+        Perhaps this observation can be used to check the results?
+
         """
-        tan_slope = -4 * self.end_x / self.end_y  # Given
+        tan_slope = -4 * self.end[0] / self.end[1]  # Given
         tan_angle = m.atan(tan_slope)
-        difference = tan_angle - cur_angle
-        new_angle = cur_angle + 2 * difference
+        difference = tan_angle - self.angle
+        new_angle = self.angle + 2 * difference
         new_slope = m.tan(new_angle)
 
         '''
-        cur_angle = self.angle
-        cur_slope = self.slope
         for k, v in locals().items():
             print k, v
         '''
@@ -55,18 +76,17 @@ class Beam(object):
         mx + b = sqrt(100 - 4x^2)
         (mx + b)^2 = (+/-)(100 - 4x^2)
 
-        The Positive version is valid for the top half of the ellipse, while the
-        Negative version is valid for the bottom half. It is plausible for both the
-        start and end point to be in the same half. We need to figure out whether the
-        final point will be in the top or bottom half of the ellipse. We can do that
-        by creating the line from the current point to either (-5, 0) or (5, 0), where
-        the ellipse intersects the X axis. If the first point is in the bottom
-        half, and the line's slope creates a line that is "beneath" this
-        constructed slope, then we need to take the Negative version. A similar test
-        will work if the first point is above the X axis. However, it might be better
-        to just solve both the positive and the negative version, and at the end,
-        we should be able to isolate the correct solutions. See below for a discussion
-        on that.
+        The Positive version is valid for the top half of the ellipse, while
+        the Negative version is valid for the bottom half. It is plausible for
+        both the start and end point to be in the same half. We need to figure
+        out whether the final point will be in the top or bottom half of the
+        ellipse. We can do that by creating the line from the current point to
+        either (-5, 0) or (5, 0), where the ellipse intersects the X axis. If
+        the first point is in the bottom half, and the line's slope creates a
+        line that is "beneath" this constructed slope, then we need to take the
+        Negative version. A similar test will work if the first point is above the X axis. However, it might be better to just solve both the positive
+        and the negative version, and at the end, we should be able to isolate
+        the correct solutions. See below for a discussion on that.
 
         Positive version:                   | Negative version:
         m^2x^2 + 2mbx + b^2 = 100 - 4x^2    | m^2x^2 + 2mbx + b^2 = 4x^2 - 100
@@ -85,22 +105,20 @@ class Beam(object):
         With these, one x will be outside of [-5, 5]. The other x will be
         inside, and will be the correct one.
 
-        We can match 4 points using the equation for the ellipse and the quadratic
-        formula. The starting point will be one of these 4 points. With the other
-        three points, I suspect that two of them will have x values that are outside
-        of the range of [-5, 5]. If this is true, then it will be trivial to identify
-        which point is the true ending point.
+        We can match 4 points using the equation for the ellipse and the
+        quadratic formula. The starting point will be one of these 4 points.
+        With the other three points, I suspect that two of them will have x
+        values that are outside of the range of [-5, 5]. If this is true, then
+        it will be trivial to identify which point is the true ending point.
 
         """
 
 
 if __name__ == '__main__':
-    #start = Beam(0, 10.1)
-    #start.set_end(1.4, -9.6)
-    start = Beam(0.0, 5.0)
-    start.set_end(-5.0, 0.1)
-    start.set_slope((start.end_y - start.start_y) /
-                    (start.end_x - start.start_x))
+    start = Beam((0, 10.1))
+    start.set_end((1.4, -9.6))
+    start.set_slope((start.end[1] - start.start[1]) /
+                    (start.end[0] - start.start[0]))
     start.info()
     start.get_next_beam()
 
