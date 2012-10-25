@@ -1,19 +1,13 @@
 import math as m
 
 
-def clean_angle(angle):
-    mod_2pi = m.radians(m.degrees(angle))
-    if mod_2pi < 0:
-        mod_2pi += 2 * m.pi
-    return mod_2pi
-
-
 class Beam(object):
     def __init__(self, point):
         """
-        Initializes the instance attributes that will eventually
-        be set. start and end are assumed to be 2-tuples representing x, y coordinates.
-        Slope is the rise over the run for the current line (or equivalently, the
+        Initializes the instance attributes that will eventually be set.
+        start and end are assumed to be 2-tuples representing x, y
+        coordinates.  Slope is the rise over the run for the current line
+        (or equivalently, the
         (start[1] - end[1]) / (start[0] - end[0])
         """
         self.start = point
@@ -60,24 +54,7 @@ class Beam(object):
 
         """
         tan_slope = -4 * self.end[0] / self.end[1]  # Given
-        tan_angle = clean_angle(m.atan(tan_slope))
-        difference = clean_angle(tan_angle - self.angle)
-        new_angle = clean_angle(self.angle + 2 * difference)
-        new_slope = m.tan(new_angle)
-
-        other_difference = clean_angle(tan_angle + self.angle)
-        other_angle = clean_angle(self.angle + 2 * other_difference)
-        other_slope = m.tan(other_angle)
-        print other_slope, new_slope
-        for k, v in locals().items():
-            print k, v
-        assert other_slope == new_slope
-
-        '''
-        for k, v in locals().items():
-            print k, v
-        '''
-        new_beam.set_slope(new_slope)
+        new_beam.set_slope(reflect(self.slope, tan_slope))
 
     def _derive_next_end(self, new_beam):
         """
@@ -131,11 +108,42 @@ class Beam(object):
         """
 
 
+def clean_angle(angle):
+    mod_2pi = m.radians(m.degrees(angle))
+    while 0 > mod_2pi or mod_2pi > (2 * m.pi):
+        if mod_2pi < 0:
+            mod_2pi += 2 * m.pi
+        if mod_2pi >= (2 * m.pi):
+            mod_2pi -= 2 * m.pi
+    return mod_2pi
+
+
+def reflect(slope, reflection_slope):
+    reflection_angle = m.atan(reflection_slope)
+    angle = m.atan(slope)
+
+    difference = angle - reflection_angle
+    new_angle = clean_angle(reflection_angle - difference)
+    new_slope = m.tan(new_angle)
+
+    other_difference = m.pi - (angle - reflection_angle)
+    other_angle = clean_angle(angle + 2 * other_difference)
+    other_slope = m.tan(other_angle)
+    assert (other_slope - .00001 < new_slope and
+            other_slope + .00001 > new_slope)
+
+    return new_slope
+
+
 if __name__ == '__main__':
+    '''
     start = Beam((0, 10.1))
     start.set_end((1.4, -9.6))
     start.set_slope((start.end[1] - start.start[1]) /
                     (start.end[0] - start.start[0]))
     start.info()
     start.get_next_beam()
+    '''
+
+    print 'reflect', reflect(1, 1 / m.sqrt(3))
 
