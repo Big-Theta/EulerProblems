@@ -141,7 +141,7 @@ if __name__ == '__main__':
     start.set_slope((start.end[1] - start.start[1]) /
                     (start.end[0] - start.start[0]))
     start.info()
-    start.get_next_beam()
 
-    print 'reflect', reflect(1, 1 / m.sqrt(3))
+    next_beam = start.get_next_beam()
+    next_beam.info()
 
