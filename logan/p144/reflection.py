@@ -136,14 +136,12 @@ def reflect(slope, reflection_slope):
 
 
 if __name__ == '__main__':
-    '''
     start = Beam((0, 10.1))
     start.set_end((1.4, -9.6))
     start.set_slope((start.end[1] - start.start[1]) /
                     (start.end[0] - start.start[0]))
     start.info()
     start.get_next_beam()
-    '''
 
     print 'reflect', reflect(1, 1 / m.sqrt(3))
 
