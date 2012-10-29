@@ -75,7 +75,7 @@ class Beam(object):
         """
         Equation of ellipse:
         4x^2 + y^2 = 100
-        y = sqrt(100 - 4x^2); x = sqrt(100 - y^2)
+        y = (+/-)sqrt(100 - 4x^2); x = sqrt(100 - y^2)
 
         Equation of line: (m, x_0, y_0 are known, need to find b)
         y = mx + b
@@ -136,17 +136,17 @@ class Beam(object):
         print 'new_beam'
         new_beam.info()
 
-        candidates = intersect_all(self.get_slope(),
-                                   self.get_y_intercept())
+        candidates = intersect_all(new_beam.get_slope(),
+                                   new_beam.get_y_intercept())
         new_end = None
         for candidate in candidates:
             print "  ::candidate:", candidate
             if not candidate:
                 pass
-            elif (nearly_equal(candidate[0], self.end[0], 2) and
-                  nearly_equal(candidate[1], self.end[1], 2)):
+            elif (nearly_equal(candidate[0], new_beam.end[0], 2) and
+                  nearly_equal(candidate[1], new_beam.end[1], 2)):
                 print "found start...", candidate
-                print "start...", self.end
+                print "start...", new_beam.end
                 pass
             elif (abs(candidate[0]) > 5):
                 print "outside x...", candidate
@@ -217,10 +217,17 @@ def intersect_nn(m_, b):
 
 def intersect_all(m_, b):
     retval = []
+    point = None
     for func in [intersect_pp, intersect_pn,
                  intersect_np, intersect_nn]:
         try:
-            retval.append(func(m_, b))
+            point = func(m_, b)
+            print 'point', point
+            print '???', 4 * (point[0] ** 2) + point[1] ** 2
+            if not nearly_equal(4 * (point[0] ** 2) + point[1] ** 2,
+                                100, 2):
+                pass
+            retval.append(None)
         except ValueError:
             retval.append(None)
     return retval
@@ -275,6 +282,13 @@ def nearly_equal(a, b, n=3):
 
 
 if __name__ == '__main__':
+    start = Beam((1.4, -9.6))
+    p = (0, 10.1)
+    start.set_end(p)
+    start.set_slope((start.end[1] - start.start[1]) /
+                    (start.end[0] - start.start[0]))
+    print '&&&&&&&&&&&&&&&&&&'
+    exit()
     start = Beam((0, 10.1))
     p = (1.4, -9.6)
     start.set_end((1.4, -9.6))
@@ -286,7 +300,6 @@ if __name__ == '__main__':
 
     print "************"
     start.info(False)
-    exit()
     print '**********'
     prev = start
 
