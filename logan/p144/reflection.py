@@ -1,4 +1,8 @@
 import math as m
+import numpy as np
+import pylab
+from matplotlib.patches import Ellipse
+import matplotlib.lines as mlines
 
 
 class Beam(object):
@@ -41,6 +45,12 @@ class Beam(object):
                            (self.end[0] - self.start[0]))
         return self.slope
 
+    def done(self):
+        if ((-0.01 < self.end[0] and self.end[0] < 0.01) and
+            (nearly_equal(10, self.end[1], 1))):
+            return True
+        return False
+
     def get_y_intercept(self):
         """
         y = mx + b
@@ -56,7 +66,6 @@ class Beam(object):
         """
         new_beam = Beam(self.end)
         self._derive_next_slope(new_beam)
-        self.info()
         self._derive_next_end(new_beam)
         assert new_beam.end
         return new_beam
@@ -82,88 +91,37 @@ class Beam(object):
 
         Set the two versions of y equal:
         mx + b = sqrt(100 - 4x^2)
-        (mx + b)^2 = (+/-)(100 - 4x^2)
-
-        The Positive version is valid for the top half of the ellipse,
-        while the Negative version is valid for the bottom half. It is
-        plausible for both the start and end point to be in the same
-        half. We need to figure out whether the final point will be in
-        the top or bottom half of the ellipse. We can do that by
-        creating the line from the current point to either (-5, 0) or
-        (5, 0), where the ellipse intersects the X axis. If the first
-        point is in the bottom half, and the line's slope creates a
-        line that is "beneath" this constructed slope, then we need to
-        take the Negative version. A similar test will work if the
-        first point is above the X axis. However, it might be better
-        to just solve both the positive and the negative version, and
-        at the end, we should be able to isolate the correct
-        solutions. See below for a discussion on that.
-
-        Positive version:
+        (mx + b)^2 = 100 - 4x^2
         m^2x^2 + 2mbx + b^2 = 100 - 4x^2
         (m^2 + 4)x^2 + 2mbx + b^2 - 100 = 0
         A = m^2 + 4, B = 2mb, C = b^2 - 100
 
-        Negative version:
-        m^2x^2 + 2mbx + b^2 = 4x^2 - 100
-        (m^2 - 4)x^2 + 2mbx + b^2 + 100 = 0
-        A = m^2 - 4, B = 2mb, C = b^2 + 100
-
         Quadratic formula:
         Ax^2 + Bx + C = 0 --> x = (-B + (+/-)sqrt(B^2 - 4AC)) / 2A
 
-        Positive version:
         x = (-2mb + (+/-)sqrt((2mb)^2 - 4(m^2 + 4)(b^2 - 100))) / 2(m^2 + 4)
-
-        Negative version:
-        x = (-2mb + (+/-)sqrt((2mb)^2 - 4(m^2 - 4)(b^2 + 100))) / 2(m^2 - 4)
 
         Try to capture common portions of these equations. alpha will
         be the part that is different in the two cases.
 
-        With these, one x will be outside of [-5, 5]. The other x will
-        be inside, and will be the correct one.
-
-        We can match 4 points using the equation for the ellipse and
-        the quadratic formula. The starting point will be one of these
-        4 points.  With the other three points, I suspect that two of
-        them will have x values that are outside of the range of [-5,
-        5]. If this is true, then it will be trivial to identify which
-        point is the true ending point.
-
         """
-        print "> derive_next_end()"
-        print 'new_beam'
-        new_beam.info()
-
         candidates = intersect_all(new_beam.get_slope(),
                                    new_beam.get_y_intercept())
         new_end = None
         for candidate in candidates:
-            print "  ::candidate:", candidate
             if not candidate:
                 pass
-            elif (nearly_equal(candidate[0], new_beam.end[0], 2) and
-                  nearly_equal(candidate[1], new_beam.end[1], 2)):
-                print "found start...", candidate
-                print "start...", new_beam.end
+            elif (nearly_equal(candidate[0], new_beam.start[0], 2) and
+                  nearly_equal(candidate[1], new_beam.start[1], 2)):
                 pass
             elif (abs(candidate[0]) > 5):
-                print "outside x...", candidate
                 pass
             elif (abs(candidate[1]) > 10):
-                print "outside y...", candidate
                 pass
             else:
                 if new_end:
-                    print "=============="
-                    for x in candidates:
-                        print '?', x
-                    print "New end: {0}".format(new_end)
-                    print "Candidate: {0}".format(candidate)
                     assert False
                 new_end = candidate
-                print " ...set candidate:", candidate
         new_beam.end = new_end
 
 
@@ -171,63 +129,36 @@ def _intersect_y(m_, x, b):
     return m_ * x + b
 
 
-def intersect_pp(m_, b):
+def intersect_p(m_, b):
     num = (-2 * m_ * b +
            (m.sqrt((2 * m_ * b) ** 2 -
-            4 * (m_ ** 2) * (b ** 2 - 100))))
+            4 * (m_ ** 2 + 4) * (b ** 2 - 100))))
     denom = 2 * (m_ ** 2 + 4)
     x = num / denom
     y = _intersect_y(m_, x, b)
-    print "pp", x, y
     return (x, y)
 
 
-def intersect_pn(m_, b):
+def intersect_n(m_, b):
     num = (-2 * m_ * b -
            (m.sqrt((2 * m_ * b) ** 2 -
-                   4 * (m_ ** 2) * (b ** 2 - 100))))
+                   4 * (m_ ** 2 + 4) * (b ** 2 - 100))))
     denom = 2 * (m_ ** 2 + 4)
     x = num / denom
     y = _intersect_y(m_, x, b)
-    print "pn", x, y
-    return (x, y)
-
-
-def intersect_np(m_, b):
-    num = (-2 * m_ * b +
-           (m.sqrt((2 * m_ * b) ** 2 -
-                    4 * (m_ ** 2 - 4) * (b ** 2 + 100))))
-    denom = 2 * (m_ ** 2 - 4)
-    x = num / denom
-    y = _intersect_y(m_, x, b)
-    print "np", x, y
-    return (x, y)
-
-
-def intersect_nn(m_, b):
-    num = (-2 * m_ * b -
-           (m.sqrt((2 * m_ * b) ** 2 -
-                    4 * (m_ ** 2 - 4) * (b ** 2 + 100))))
-    denom = 2 * (m_ ** 2 - 4)
-    x = num / denom
-    y = _intersect_y(m_, x, b)
-    print "nn", x, y
     return (x, y)
 
 
 def intersect_all(m_, b):
     retval = []
     point = None
-    for func in [intersect_pp, intersect_pn,
-                 intersect_np, intersect_nn]:
+    for func in [intersect_p, intersect_n]:
         try:
             point = func(m_, b)
-            print 'point', point
-            print '???', 4 * (point[0] ** 2) + point[1] ** 2
             if not nearly_equal(4 * (point[0] ** 2) + point[1] ** 2,
                                 100, 2):
                 pass
-            retval.append(None)
+            retval.append(point)
         except ValueError:
             retval.append(None)
     return retval
@@ -282,29 +213,45 @@ def nearly_equal(a, b, n=3):
 
 
 if __name__ == '__main__':
-    start = Beam((1.4, -9.6))
-    p = (0, 10.1)
-    start.set_end(p)
-    start.set_slope((start.end[1] - start.start[1]) /
-                    (start.end[0] - start.start[0]))
-    print '&&&&&&&&&&&&&&&&&&'
-    exit()
     start = Beam((0, 10.1))
-    p = (1.4, -9.6)
     start.set_end((1.4, -9.6))
     start.set_slope((start.end[1] - start.start[1]) /
                     (start.end[0] - start.start[0]))
-
-    for c in intersect_all(start.get_slope(), start.get_y_intercept()):
-        print c
-
-    print "************"
-    start.info(False)
-    print '**********'
     prev = start
 
-    for _ in range(10):
+    count = 1
+    x_points = []
+    y_points = []
+    p = None
+    while not prev.done():
+        print count, prev.end
+        p = prev.end
+        x_points.append(p[0])
+        y_points.append(p[1])
         next_beam = prev.get_next_beam()
         prev = next_beam
-        next_beam.info()
+        count += 1
+    print "Out at", count, prev.end
+
+    ells = [Ellipse(xy=(0, 0), width=10, height=20)]
+
+    fig = pylab.figure()
+    ax = fig.add_subplot(111, aspect='equal')
+    for e in ells:
+        ax.add_artist(e)
+        e.set_clip_box(ax.bbox)
+        e.set_alpha(pylab.rand())
+        e.set_facecolor(pylab.rand(3))
+
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 10)
+
+
+    # add a line
+    x,y = np.array([x_points, y_points])
+    line = mlines.Line2D(x, y)
+
+    ax.add_line(line)
+
+    pylab.show()
 
