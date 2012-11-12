@@ -21,3 +21,8 @@ class Bignum
         return my_prime?(self)
     end
 end
+
+(0..11).each do |i|
+  puts i if i.prime?
+end
+
