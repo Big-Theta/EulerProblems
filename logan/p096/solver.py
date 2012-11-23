@@ -19,7 +19,6 @@ class Board(object):
         for i, line in enumerate(text_arr):
             for ch in line:
                 self.grid[i].append(int(ch))
-        self.eliminate()
 
 
     def nantile(self, x, y):
@@ -31,8 +30,7 @@ class Board(object):
             return self.nan_pos[2]
         if 0 <= x <= 2 and 3 <= y <= 5:
             return self.nan_pos[3]
-        elif 3 <= x <= 5 and 3 <= y <= 5:
-            return self.nan_pos[4]
+        elif 3 <= x <= 5 and 3 <= y <= 5: return self.nan_pos[4]
         elif 6 <= x <= 8 and 3 <= y <= 5:
             return self.nan_pos[5]
         if 0 <= x <= 2 and 6 <= y <= 8:
