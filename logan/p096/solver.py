@@ -8,98 +8,90 @@ gBoards = []
 class Board(object):
     def __init__(self, number, text_arr):
         self.number = number
+        # Configure constraints (no processing yet)
+        self.row_pos = [set(range(1, 10)) for _ in range(9)]
+        self.col_pos = [set(range(1, 10)) for _ in range(9)]
+        self.nan_pos = [set(range(1, 10)) for _ in range(9)]
+
         self.grid = [[] for _ in range(9)]
 
+        # Initialize the grid
         for i, line in enumerate(text_arr):
             for ch in line:
-                if ch == '0':
-                    illegals = set()
-                    for x in range(1, 10):
-                        illegals.add(x)
+                self.grid[i].append(int(ch))
+        self.eliminate()
 
-                    self.grid[i].append(illegals)
-                else:
-                    self.grid[i].append(int(ch))
+
+    def nantile(self, x, y):
+        if 0 <= x <= 2 and 0 <= y <= 2:
+            return self.nan_pos[0]
+        elif 3 <= x <= 5 and 0 <= y <= 2:
+            return self.nan_pos[1]
+        elif 6 <= x <= 8 and 0 <= y <= 2:
+            return self.nan_pos[2]
+        if 0 <= x <= 2 and 3 <= y <= 5:
+            return self.nan_pos[3]
+        elif 3 <= x <= 5 and 3 <= y <= 5:
+            return self.nan_pos[4]
+        elif 6 <= x <= 8 and 3 <= y <= 5:
+            return self.nan_pos[5]
+        if 0 <= x <= 2 and 6 <= y <= 8:
+            return self.nan_pos[6]
+        elif 3 <= x <= 5 and 6 <= y <= 8:
+            return self.nan_pos[7]
+        elif 6 <= x <= 8 and 6 <= y <= 8:
+            return self.nan_pos[8]
+
+
+    def eliminate(self):
+        while self._eliminate_update_constraints():
+            time.sleep(0.01)
+            for i in range(9):
+                for j in range(9):
+                    # Cell is not known
+                    if not self.grid[i][j]:
+                        pos = (self.col_pos[i] &
+                               self.row_pos[j] &
+                               self.nantile(i, j))
+                        if len(pos) == 1:
+                            self.grid[i][j] = pos.pop()
+
+
+    def _eliminate_update_constraints(self):
+        updated = False
+        for i in range(9):
+            for j in range(9):
+                size_col = len(self.col_pos[i])
+                size_row = len(self.row_pos[j])
+                size_nan = len(self.nantile(i, j))
+                self.col_pos[i].discard(self.grid[i][j])
+                self.row_pos[j].discard(self.grid[i][j])
+                self.nantile(i, j).discard(self.grid[i][j])
+                if size_col != len(self.col_pos[i]):
+                    updated = True
+                if size_row != len(self.row_pos[j]):
+                    updated = True
+                if size_nan != len(self.nantile(i, j)):
+                    updated = True
+        return updated
+
 
     def grid_hash(self):
-        return self.grid[0][0] * 100 + self.grid[0][1] * 10 + self.grid[0][2]
+        return (self.grid[0][0] * 100 +
+                self.grid[0][1] * 10 +
+                self.grid[0][2])
 
     def board_copy(self):
         return copy.deepcopy(self)
 
-    def is_reduced(self):
+    def is_solved(self):
         for x in range(9):
             for y in range(9):
-                if isinstance(self.grid[x][y], set):
+                if not self.grid[x][y]:
                     return False
         return True
 
-    def reduce_grid(self):
-        reduced_f = True
-        while reduced_f:
-            reduced_f = False
-            for x in range(9):
-                for y in range(9):
-                    if self.reduce_spot(x, y):
-                        reduced_f = True
-                    if (isinstance(self.grid[x][y], set) and
-                        len(self.grid[x][y]) == 1):
-                        self.grid[x][y] = int(self.grid[x][y].pop())
-                        reduced_f = True
-
-
-    def reduce_spot(self, x, y):
-        if isinstance(self.grid[x][y], int):
-            return False
-        pre_reduced_size = len(self.grid[x][y])
-
-        # Row
-        for i in range(9):
-            if i != y and isinstance(self.grid[x][i], int):
-                self.grid[x][y].discard(self.grid[x][i])
-
-        # Col
-        for i in range(9):
-            if i != x and isinstance(self.grid[i][y], int):
-                self.grid[x][y].discard(self.grid[i][y])
-
-        # Square
-        if 0 <= x <= 2:
-            x_range = range(0, 3)
-        elif 3 <= x <= 5:
-            x_range = range(3, 6)
-        else:
-            x_range = range(6, 9)
-
-        if 0 <= y <= 2:
-            y_range = range(0, 3)
-        elif 3 <= y <= 5:
-            y_range = range(3, 6)
-        else:
-            y_range = range(6, 9)
-
-        for i in x_range:
-            for j in y_range:
-                if i == x and j == y:
-                    continue
-                if isinstance(self.grid[i][j], int):
-                    self.grid[x][y].discard(self.grid[i][j])
-
-        if pre_reduced_size == len(self.grid[x][y]):
-            return False
-        else:
-            return True
-
-
     def view(self):
-        print
-        print '==========='
-        print self.number
-        for l in self.grid:
-            print l
-
-    def print_grid(self):
-        time.sleep(0.01)
         print
         print "==========="
         print self.number
@@ -109,7 +101,7 @@ class Board(object):
             for j in range(9):
                 if j % 3 == 0:
                     print "|",
-                if isinstance(self.grid[i][j], int):
+                if self.grid[i][j]:
                     print self.grid[i][j],
                 else:
                     print '.',
@@ -128,23 +120,24 @@ def gen_text_arrs():
             for _ in range(9):
                 lines.append(fin.readline().strip())
 
-            gBoards.append(Board(number, lines))
+            yield Board(number, lines)
 
 
 def test_gen_text_arr():
-    gBoards.append(Board(
-            0,
-            [
-                '003020600',
-                '900305001',
-                '001806400',
-                '008102900',
-                '700000008',
-                '006708200',
-                '002609500',
-                '800203009',
-                '005010300']
-        ))
+    yield Board(0, ['003020600',
+                    '900305001',
+                    '001806400',
+                    '008102900',
+                    '700000008',
+                    '006708200',
+                    '002609500',
+                    '800203009',
+                    '005010300'])
+
+
+def populate_gBoards(board_gen):
+    for board in board_gen:
+        gBoards.append(board)
 
 
 def backtrack(board, depth=0):
@@ -180,7 +173,18 @@ def backtrack(board, depth=0):
     return copy
 
 
+def main():
+    populate_gBoards(gen_text_arrs())
+    count = 0
+    for board in gBoards:
+        print board.number, board.is_solved()
+        if board.is_solved():
+            count += 1
+    print count
+
 if __name__ == '__main__':
+    main()
+    '''
     gen_text_arrs()
     #test_gen_text_arr()
     new_boards = []
@@ -203,4 +207,5 @@ if __name__ == '__main__':
 
     print count
     print hash_total
+    '''
 
