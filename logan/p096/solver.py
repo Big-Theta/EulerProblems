@@ -1,6 +1,7 @@
 import re
 import copy
 import time
+import sys
 
 
 gBoards = []
@@ -18,7 +19,12 @@ class Board(object):
         # Initialize the grid
         for i, line in enumerate(text_arr):
             for ch in line:
-                self.grid[i].append(int(ch))
+                ch = int(ch)
+                if ch:
+                    self.grid[i].append(set())
+                    self.grid[i][-1].add(ch)
+                else:
+                    self.grid[i].append(set(range(1, 10)))
 
 
     def nantile(self, x, y):
@@ -30,7 +36,8 @@ class Board(object):
             return self.nan_pos[2]
         if 0 <= x <= 2 and 3 <= y <= 5:
             return self.nan_pos[3]
-        elif 3 <= x <= 5 and 3 <= y <= 5: return self.nan_pos[4]
+        elif 3 <= x <= 5 and 3 <= y <= 5:
+            return self.nan_pos[4]
         elif 6 <= x <= 8 and 3 <= y <= 5:
             return self.nan_pos[5]
         if 0 <= x <= 2 and 6 <= y <= 8:
@@ -40,37 +47,93 @@ class Board(object):
         elif 6 <= x <= 8 and 6 <= y <= 8:
             return self.nan_pos[8]
 
+    def nantile_index(self, x, y):
+        if 0 <= x <= 2 and 0 <= y <= 2:
+            return 0
+        elif 3 <= x <= 5 and 0 <= y <= 2:
+            return 1
+        elif 6 <= x <= 8 and 0 <= y <= 2:
+            return 2
+        if 0 <= x <= 2 and 3 <= y <= 5:
+            return 3
+        elif 3 <= x <= 5 and 3 <= y <= 5:
+            return 4
+        elif 6 <= x <= 8 and 3 <= y <= 5:
+            return 5
+        if 0 <= x <= 2 and 6 <= y <= 8:
+            return 6
+        elif 3 <= x <= 5 and 6 <= y <= 8:
+            return 7
+        elif 6 <= x <= 8 and 6 <= y <= 8:
+            return 8
+
+
+    def nantile_other_indecies(self, x, y):
+        index = self.nantile_index(x, y)
+        for i in range(9):
+            for j in range(9):
+                if (self.nantile_index(i, j) == index and
+                    not (x == i and y == j)):
+                    yield [i, j]
+
 
     def eliminate(self):
         while self._eliminate_update_constraints():
-            time.sleep(0.01)
             for i in range(9):
                 for j in range(9):
                     # Cell is not known
-                    if not self.grid[i][j]:
-                        pos = (self.col_pos[i] &
-                               self.row_pos[j] &
-                               self.nantile(i, j))
-                        if len(pos) == 1:
-                            self.grid[i][j] = pos.pop()
+                    if len(self.grid[i][j]) != 1:
+                        basic_eliminate = (self.grid[i][j] &
+                                           self.col_pos[i] &
+                                           self.row_pos[j] &
+                                           self.nantile(i, j))
+
+                        # XXX
+                        self.grid[i][j] = basic_eliminate
+                        continue
+
+                        pos_elsewhere_col = set()
+                        for offset in range(9):
+                            if offset != i:
+                                if len(self.grid[offset][j]) == 1:
+                                    pos_elsewhere_col ^= self.grid[offset][j]
+                        other_eliminate_col = set(range(1, 10)) - pos_elsewhere_col
+                        pos_elsewhere_row = set()
+                        for offset in range(9):
+                            if offset != j:
+                                if len(self.grid[i][offset]) == 1:
+                                    pos_elsewhere_row ^= self.grid[i][offset]
+                        other_eliminate_row = set(range(1, 10)) - pos_elsewhere_row
+
+                        pos_elsewhere_nan = set()
+                        for a, b in self.nantile_other_indecies(i, j):
+                            if len(self.grid[a][b]) == 1:
+                                pos_elsewhere_nan ^= self.grid[a][b]
+                        other_eliminate_nan = set(range(1, 10)) - pos_elsewhere_nan
+
+                        self.grid[i][j] = (basic_eliminate &
+                                           other_eliminate_col &
+                                           other_eliminate_row &
+                                           other_eliminate_nan)
 
 
     def _eliminate_update_constraints(self):
         updated = False
         for i in range(9):
             for j in range(9):
-                size_col = len(self.col_pos[i])
-                size_row = len(self.row_pos[j])
-                size_nan = len(self.nantile(i, j))
-                self.col_pos[i].discard(self.grid[i][j])
-                self.row_pos[j].discard(self.grid[i][j])
-                self.nantile(i, j).discard(self.grid[i][j])
-                if size_col != len(self.col_pos[i]):
-                    updated = True
-                if size_row != len(self.row_pos[j]):
-                    updated = True
-                if size_nan != len(self.nantile(i, j)):
-                    updated = True
+                if len(self.grid[i][j]) == 1:
+                    size_col = len(self.col_pos[i])
+                    size_row = len(self.row_pos[j])
+                    size_nan = len(self.nantile(i, j))
+                    self.col_pos[i] -= self.grid[i][j]
+                    self.row_pos[j] -= self.grid[i][j]
+                    self.nan_pos[self.nantile_index(i, j)] -= self.grid[i][j]
+                    if size_col != len(self.col_pos[i]):
+                        updated = True
+                    if size_row != len(self.row_pos[j]):
+                        updated = True
+                    if size_nan != len(self.nantile(i, j)):
+                        updated = True
         return updated
 
 
@@ -85,24 +148,40 @@ class Board(object):
     def is_solved(self):
         for x in range(9):
             for y in range(9):
-                if not self.grid[x][y]:
+                if len(self.grid[x][y]) != 1:
                     return False
         return True
 
     def view(self):
         print
         print "==========="
-        print self.number
+        print "Grid", self.number
         for i in range(9):
             if i % 3 == 0:
                 print "========================="
             for j in range(9):
                 if j % 3 == 0:
                     print "|",
-                if self.grid[i][j]:
-                    print self.grid[i][j],
+                if len(self.grid[i][j]) == 1:
+                    store = self.grid[i][j].pop()
+                    print store,
+                    self.grid[i][j].add(store)
                 else:
                     print '.',
+            print "|"
+        print "========================="
+
+    def view_num_pos(self):
+        print
+        print "==========="
+        print "Grid", self.number, "num possible"
+        for i in range(9):
+            if i % 3 == 0:
+                print "========================="
+            for j in range(9):
+                if j % 3 == 0:
+                    print "|",
+                print len(self.grid[i][j]),
             print "|"
         print "========================="
 
@@ -175,9 +254,21 @@ def main():
     populate_gBoards(gen_text_arrs())
     count = 0
     for board in gBoards:
-        print board.number, board.is_solved()
+        board.eliminate()
         if board.is_solved():
             count += 1
+    b = gBoards[6]
+    #b.view_num_pos()
+    '''
+    b.view_num_pos()
+    '''
+    b.eliminate()
+    '''
+    b.view_num_pos()
+    '''
+    b.view()
+    #b.view_num_pos()
+
     print count
 
 if __name__ == '__main__':
