@@ -101,15 +101,20 @@ class Board(object):
     def print_grid(self):
         time.sleep(0.01)
         print
-        print '==========='
+        print "==========="
         print self.number
         for i in range(9):
+            if i % 3 == 0:
+                print "========================="
             for j in range(9):
+                if j % 3 == 0:
+                    print "|",
                 if isinstance(self.grid[i][j], int):
                     print self.grid[i][j],
                 else:
                     print '.',
-            print
+            print "|"
+        print "========================="
 
 
 def gen_text_arrs():
@@ -180,10 +185,11 @@ if __name__ == '__main__':
     #test_gen_text_arr()
     new_boards = []
     for board in gBoards:
+        start = time.time()
         print "Starting", board.number, "...",
         new_boards.append(backtrack(board))
         if new_boards[-1].is_reduced():
-            print "solved", new_boards[-1].grid_hash()
+            print "solved", new_boards[-1].grid_hash(), time.time() - start
         else:
             print "failed"
     gBoards = new_boards
@@ -197,5 +203,4 @@ if __name__ == '__main__':
 
     print count
     print hash_total
-    gBoards[0].view()
 
