@@ -1,14 +1,22 @@
 import math as m
 import itertools
 import analyze
+import time
 
 
 gPrimes1 = []
 gPrimes3 = [2]
 gMultiples = []
-MAX = 4733728
 #MAX = 100
-LIM = int(1E11)
+#LIM = int(1E11)
+LIM = 38000000
+
+MAX = LIM / (5 ** 6)
+#MAX = 4733728
+
+"""
+30875234922 for n<=38000000
+"""
 
 def init_primes():
     for i in xrange(3, MAX, 2):
@@ -19,12 +27,12 @@ def init_primes():
                 gPrimes3.append(i)
 
 
-def construct_base_sol():
+def yield_base_sol():
     for a in range(len(gPrimes1)):
-        if gPrimes1[a] ** 3 > LIM:
+        if gPrimes1[a] ** 3 * 13 ** 2 * 17 > LIM:
             break
         for b in range(a + 1, len(gPrimes1)):
-            if gPrimes1[a] ** 3 * gPrimes1[b] ** 2 > LIM:
+            if gPrimes1[a] ** 3 * gPrimes1[b] ** 2 * 17 > LIM:
                 break
             for c in range(b + 1, len(gPrimes1)):
                 if gPrimes1[a] ** 3 * gPrimes1[b] ** 2 * gPrimes1[c] > LIM:
@@ -38,11 +46,11 @@ def construct_base_sol():
                     gPrimes1[a] * gPrimes1[b] ** 2 * gPrimes1[c] ** 3,
                     ]
                 for p in pos:
-                    if p < LIM:
+                    if p <= LIM:
                         yield p
 
     for a in range(len(gPrimes1)):
-        if gPrimes1[a] ** 7 > LIM:
+        if gPrimes1[a] ** 7 * 13 ** 3 > LIM:
             break
         for b in range(a + 1, len(gPrimes1)):
             if gPrimes1[a] ** 7 * gPrimes1[b] ** 3 > LIM:
@@ -52,63 +60,17 @@ def construct_base_sol():
                     gPrimes1[a] ** 3 * gPrimes1[b] ** 7
                 ]
             for p in pos:
-                if p < LIM:
+                if p <= LIM:
                     yield p
 
 
-def construct_multiples():
-    pass
-
-
-
-def get_radius(N):
-    """
-    x^2 + y^2 = z^2  # Pythagorus
-    2 * z = N * sqrt(2)  # N * sqrt(2) is diameter
-    z = (N * sqrt(2)) / 2
-
-    """
-    #return m.sqrt(2 * ((N / 2.0) ** 2))
-    return (N * m.sqrt(2.0)) / 2.0
-
-
-def is_inside(N, x, y):
-    h_dist = x - N / 2.0
-    v_dist = y - N / 2.0
-    cond = h_dist ** 2 + v_dist ** 2
-    other = (N ** 2.0) / 2.0
-
-    if cond < other:
-        return -1
-    elif cond > other:
-        return 1
-    else:
-        return 0
-
-
-def f(N):
-    count = 0
-    cond = None
-    x = int(m.floor((N + 1) // 2 + get_radius(N)))
-    y = (N - 1) // 2
-
-    while x > N // 2:
-        cond = is_inside(N, x, y)
-        if cond == 0:
-            count += 1
-            x -= 1
-            y += 1
-        elif cond == -1:
-            y += 1
-        else:
-            x -= 1
-
-    final = count * 4
-
-    #final = count * 8 - 4
-    return final
-
-
+def construct_safe_multiples():
+    for i in xrange(278455):
+        for f in factor(i):
+            if f % 4 == 1:
+                break
+        else:  # for
+            gMultiples.append(i)
 def _factor(n):
     if n == 1: return [1] 
 
@@ -216,38 +178,22 @@ def g(N):
     return 4 * (c_1 - c_3)
 
 
-def h(N):
-    c_1 = c_3 = 0
-    for divisor in gen_odd_divisors(N):
-        if divisor % 4 == 1:
-            c_1 += 1
-        else:
-            c_3 += 1
-    print 'c_1', c_1
-    print 'c_3', c_3
-    return 4 * (c_1 - c_3)
 
-
-def gen_base():
-    """Find primes p congruent to 1 mod 4.
-    The basic solutions are:
-    p_1 ** 3 * p_2 ** 7
-    p_1 ** 1 * p_2 ** 2 * p_3 ** 3
-
-    Multiply this quantity by any number that does not have one
-    of these special p's as a factor, and the resultant number will
-    have the same property.
-
-    """
-    p_3 = 5
-    p_2 = 13
-    p_1 = 17
-    for p in gen_primes_con(1):
-        if p * (p_2 ** 2) * (p_3 ** 3) > 1E11:
-            break
-        p_1 = p
-    print p_1
-
+def acc_solutions():
+    print "init_primes()..."
+    init_primes()
+    print "construct_safe_multiples()..."
+    construct_safe_multiples()
+    acc = 0
+    cand = None
+    for sol in yield_base_sol():
+        for p in gMultiples:
+            cand = sol * p
+            if cand <= LIM:
+                acc += cand
+            else:
+                break
+    return acc
 
 
 if __name__ == '__main__':
@@ -291,11 +237,14 @@ if __name__ == '__main__':
     print g(5 ** 7 * 13 ** 3)
     '''
 
-    init_primes()
-    print len(gPrimes1)
-    print len(gPrimes3)
+    '''
+    start = time.time()
+    print acc_solutions()
+    print "Time taken:", time.time() - start
+    '''
     acc = 0
-    for x in construct_base_sol():
-        acc += 1
+    for i in xrange(LIM):
+        if g(i) == 420:
+            acc += i
     print acc
 
