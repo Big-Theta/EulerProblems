@@ -25,24 +25,40 @@ class Euler96:
         ans = 0
         all_sudoku = self.build_sudoku_games()
         #all_sudoku[0].display()
-        print all_sudoku[0].get_euler_number()
-        #for s in all_sudoku:
-        #    ans += s.get_euler_number()
+        all_sudoku[1].display()
+        for s in all_sudoku:
+            ans += s.get_euler_number()
+        print ans
 
 class Sudoku:
+    def _takens(self, group): #return taken numbers in the group
+        takens = []
+        for n in group:
+            takens += [n.get_state()[0]]
+        return set(takens)
+
     def _replace_zeros(self):
-    """
-
-    FINISH HERE
-
-    """
+        modified = False
+        possibles = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        for row in self.rows:
+            for n in row:
+                if n.get_state()[0] == 0:
+                    row_takens = self._takens(self.rows[n.get_row_i()])
+                    col_takens = self._takens(self.cols[n.get_col_i()])
+                    sect_takens = self._takens(self.sectors[n.get_sect_i()])
+                    n.set_state(list((row_takens | col_takens | sect_takens) ^ set(possibles)))
+                    if len(n.get_state()) == 2:
+                        n.set_state([n.get_state()[1]])
+                        modified = True
+        if modified:
+            self._replace_zeros()
 
     #def _eliminate(self):
-        
 
     def get_euler_number(self):
         while not self.solved:
             self.solved = True
+        #self.display()
         en = self.rows[0][0].get_state()[0]
         en = (en * 10) + self.rows[0][1].get_state()[0]
         return (en * 10) + self.rows[0][2].get_state()[0]
@@ -82,6 +98,7 @@ class Sudoku:
 
         self._parse_data(raw_data)
         self._replace_zeros()
+        #self.display()
 
 """
 node of a sudoku game.
@@ -101,6 +118,9 @@ class Node:
 
     def get_state(self):
         return self.state
+
+    def set_state(self, state):
+        self.state = state
 
     def __init__(self, row_i, col_i, sect_i, state):
         self.row_i = row_i
