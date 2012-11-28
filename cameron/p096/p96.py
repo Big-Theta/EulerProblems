@@ -25,39 +25,115 @@ class Euler96:
         ans = 0
         all_sudoku = self.build_sudoku_games()
         #all_sudoku[0].display()
+        all_sudoku[1].get_euler_number()
         all_sudoku[1].display()
+        """
         for s in all_sudoku:
             ans += s.get_euler_number()
         print ans
+        """
 
 class Sudoku:
+    def is_solved(self):
+        if self._valid():
+            for g in self.rows:
+                for n in g:
+                    if n.get_state()[0] == 0:
+                        return False
+            return True
+        else:
+            return False
+
     def _takens(self, group): #return taken numbers in the group
         takens = []
         for n in group:
             takens += [n.get_state()[0]]
         return set(takens)
 
-    def _replace_zeros(self):
-        modified = False
+    def _valid(self):
+        for g_collection in [self.rows, self.cols, self.sectors]:
+            for g in g_collection:
+                if not self._valid_group(g):
+                    return False
+        return True
+
+    def _valid_group(self, group):
+        takens = []
+        for n in group:
+            n_state = n.get_state()[0]
+            if n_state not in takens:
+                takens += [n_state]
+            elif n_state != 0:
+                return False
+        return True
+
+    def _narrow_possibles(self):
         possibles = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
         for row in self.rows:
             for n in row:
                 if n.get_state()[0] == 0:
                     row_takens = self._takens(self.rows[n.get_row_i()])
                     col_takens = self._takens(self.cols[n.get_col_i()])
                     sect_takens = self._takens(self.sectors[n.get_sect_i()])
+                    prev_state = n.get_state()
                     n.set_state(list((row_takens | col_takens | sect_takens) ^ set(possibles)))
                     if len(n.get_state()) == 2:
+                        prev_state = n.get_state()
                         n.set_state([n.get_state()[1]])
-                        modified = True
-        if modified:
-            self._replace_zeros()
+                        if self._valid():
+                            return self._narrow_possibles()
+                        else:
+                            #print "not valid"
+                            n.set_state(prev_state)
+                            return False
+        if not self.is_solved():
+            return self._guess()
+        else:
+            return True
 
-    #def _eliminate(self):
+    def _guess(self):
+        absurd_node = Node(0, 0, 0, 0)
+        absurd_node.set_state([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+        best_guess = absurd_node
+        best_guess_len = len(absurd_node.get_state())
+        for g in self.rows:
+            for n in g:
+                n_state_len = len(n.get_state())
+                if n_state_len > 1 and n_state_len < best_guess_len:
+                    print "gets here"
+                    best_guess = n
+                    best_guess_len = n_state_len
+        if best_guess == absurd_node:
+            if self._valid() and self.is_solved():
+                print "it's solved"
+                return True
+            else:
+                print "not solved"
+                return False
+        prev_state = best_guess.get_state()
+        #print prev_state, best_guess.get_col_i(), best_guess.get_row_i()
+        the_guess_is_good = False
+        #print "gets here"
+        #print "prev state is ", prev_state
+        for guess in prev_state[1:]:
+            print prev_state, guess, best_guess.get_col_i(), best_guess.get_row_i()
+            #print "new state is ", guess
+            best_guess.set_state([guess])
+            the_guess_is_good = self._narrow_possibles()
+            if the_guess_is_good:
+                break
+
 
     def get_euler_number(self):
-        while not self.solved:
-            self.solved = True
+        #while not self.is_solved():
+        self._narrow_possibles()
+        """
+        while not self.is_solved():
+            print "didn't solve"
+            #self._guess():
+            
+            """
         #self.display()
         en = self.rows[0][0].get_state()[0]
         en = (en * 10) + self.rows[0][1].get_state()[0]
@@ -77,7 +153,6 @@ class Sudoku:
             self.sectors += [[]]
 
         for n in node_list:
-            self.solved = False
             self.rows[n.get_row_i()] += [n]
             self.cols[n.get_col_i()] += [n]
             self.sectors[n.get_sect_i()] += [n]
@@ -97,7 +172,6 @@ class Sudoku:
         self.sectors = [] #9 groups of nodes go here. Index matters.
 
         self._parse_data(raw_data)
-        self._replace_zeros()
         #self.display()
 
 """
