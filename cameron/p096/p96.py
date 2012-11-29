@@ -19,19 +19,18 @@ class Euler96:
                 all_sudoku.append(s)
                 raw_data = []
             line_num += 1
+        all_sudoku.append(Sudoku(raw_data))
         return all_sudoku
 
     def __init__(self):
         ans = 0
         all_sudoku = self.build_sudoku_games()
-        all_sudoku[2].display()
-        all_sudoku[2].get_euler_number()
-        all_sudoku[2].display()
-        """
-        for s in all_sudoku:
-            ans += s.get_euler_number()
+        which_sudoku = 1
+        for s_i, s in enumerate(all_sudoku):
+            this_sudoku_number = s.get_euler_number()
+            ans += this_sudoku_number
+            #print this_sudoku_number, s_i
         print ans
-        """
 
 class Sudoku:
     def is_solved(self):
@@ -78,28 +77,21 @@ class Sudoku:
                     row_takens = self._takens(self.rows[n.get_row_i()])
                     col_takens = self._takens(self.cols[n.get_col_i()])
                     sect_takens = self._takens(self.sectors[n.get_sect_i()])
-                    prev_state = n.get_state()
+                    #prev_state = n.get_state()
                     n.set_state(list((row_takens | col_takens | sect_takens) ^ set(possibles)))
-                    if n.get_col_i() == 4 and n.get_row_i() == 2:
-                        print n.get_state(), "is this ever 6?"
                     if len(n.get_state()) == 1 and n.get_state()[0] == 0:
-                        n.set_state(prev_state)
+                        #n.set_state(prev_state)
                         return False
                     if len(n.get_state()) == 2:
                         prev_state = n.get_state()
                         n.set_state([n.get_state()[1]])
-                        if n.get_col_i() == 4 and n.get_row_i() == 2:
-                            print n.get_state(), "is this ever 6?"
                         if self._valid() and self._narrow_possibles():
                             return True
                         else:
                             n.set_state(prev_state)
-                            if n.get_col_i() == 4 and n.get_row_i() == 2:
-                                print self._valid()
-                                print n.get_state(), "is this ever unset?"
                             return False
         if not self.is_solved():
-            self.display()
+            #self.display()
             return self._guess()
         else:
             return True
@@ -112,14 +104,14 @@ class Sudoku:
         for g in self.rows:
             for n in g:
                 n_state_len = len(n.get_state())
-                if n_state_len > 2 and n_state_len < best_guess_len:
+                if n_state_len > 1 and n_state_len < best_guess_len:
                     best_guess = n
                     best_guess_len = n_state_len
         if best_guess == absurd_node:
             if self._valid() and self.is_solved():
-                print "it's solved"
                 return True
             else:
+                #self.display()
                 return False
         prev_state = best_guess.get_state()
         the_guess_is_good = False
@@ -127,22 +119,19 @@ class Sudoku:
             best_guess.set_state([guess])
             the_guess_is_good = self._narrow_possibles()
             if the_guess_is_good:
-                print "good guess", best_guess.get_state()
                 break
-            #else:
-                #print "bad move at ", n.get_col_i(), n.get_row_i(), "guess", n.get_state(), prev_state
-        print "hmm", best_guess.get_state(), best_guess.get_col_i(), best_guess.get_row_i()
+            else:
+                best_guess.set_state(prev_state)
+        #print "node at %i, %i should now be %i" % (best_guess.get_col_i(), best_guess.get_row_i(), best_guess.get_state()[0])
 
 
     def get_euler_number(self):
         #while not self.is_solved():
         self._narrow_possibles()
-        """
         while not self.is_solved():
-            print "didn't solve"
-            #self._guess():
+            self._narrow_possibles()
+            self._guess()
             
-            """
         #self.display()
         en = self.rows[0][0].get_state()[0]
         en = (en * 10) + self.rows[0][1].get_state()[0]
