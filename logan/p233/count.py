@@ -5,18 +5,11 @@ import time
 
 
 gPrimes1 = []
-gPrimes3 = [2]
-gMultiples = []
-#MAX = 100
-#LIM = int(1E11)
-LIM = 38000000
+gPrimes3 = []
+gMultiples = [1]
+LIM = int(1E11)
+MAX = LIM / (5 ** 3 * 13 ** 2)
 
-MAX = LIM / (5 ** 6)
-#MAX = 4733728
-
-"""
-30875234922 for n<=38000000
-"""
 
 def init_primes():
     for i in xrange(3, MAX, 2):
@@ -28,49 +21,40 @@ def init_primes():
 
 
 def yield_base_sol():
-    for a in range(len(gPrimes1)):
-        if gPrimes1[a] ** 3 * 13 ** 2 * 17 > LIM:
-            break
-        for b in range(a + 1, len(gPrimes1)):
-            if gPrimes1[a] ** 3 * gPrimes1[b] ** 2 * 17 > LIM:
-                break
-            for c in range(b + 1, len(gPrimes1)):
-                if gPrimes1[a] ** 3 * gPrimes1[b] ** 2 * gPrimes1[c] > LIM:
-                    break
-                pos = [
-                    gPrimes1[a] ** 3 * gPrimes1[b] ** 2 * gPrimes1[c],
-                    gPrimes1[a] ** 3 * gPrimes1[b] * gPrimes1[c] ** 2,
-                    gPrimes1[a] ** 2 * gPrimes1[b] ** 3 * gPrimes1[c],
-                    gPrimes1[a] ** 2 * gPrimes1[b] * gPrimes1[c] ** 3,
-                    gPrimes1[a] * gPrimes1[b] ** 3 * gPrimes1[c] ** 2,
-                    gPrimes1[a] * gPrimes1[b] ** 2 * gPrimes1[c] ** 3,
-                    ]
-                for p in pos:
-                    if p <= LIM:
-                        yield p
+    base_sol = set()
+    def deapen(value, primes, exponents):
+        for prime_index in range(len(primes)):
+            for exp in exponents:
+                prime = primes[prime_index]
+                cand = value * prime ** exp
+                if cand > LIM:
+                    return
+                deaper_exponents = list(exponents[:])
+                deaper_exponents.remove(exp)
+                deaper_primes = primes[prime_index + 1:]
+                deapen(cand, deaper_primes, deaper_exponents)
+                if len(exponents) == 1:
+                    base_sol.add(cand)
+    for exponents in find_base_exponents():
+        print "\tUsing exponents:", exponents, "..."
+        start = time.time()
+        deapen(1, gPrimes1, exponents)
+        print "\t\t\t\tdone --", time.time() - start, "seconds"
 
-    for a in range(len(gPrimes1)):
-        if gPrimes1[a] ** 7 * 13 ** 3 > LIM:
-            break
-        for b in range(a + 1, len(gPrimes1)):
-            if gPrimes1[a] ** 7 * gPrimes1[b] ** 3 > LIM:
-                break
-            pos = [
-                    gPrimes1[a] ** 7 * gPrimes1[b] ** 3,
-                    gPrimes1[a] ** 3 * gPrimes1[b] ** 7
-                ]
-            for p in pos:
-                if p <= LIM:
-                    yield p
+
+    for sol in base_sol:
+        yield sol
 
 
 def construct_safe_multiples():
-    for i in xrange(278455):
+    for i in xrange(MAX):
         for f in factor(i):
             if f % 4 == 1:
                 break
         else:  # for
             gMultiples.append(i)
+
+
 def _factor(n):
     if n == 1: return [1] 
 
@@ -168,6 +152,25 @@ def gen_odd_divisors(n):
         yield acc
 
 
+def find_base_exponents():
+    base_sol = set()
+    def deapen(value, level):
+        my_exp = 1
+        cand = value
+        while cand <= LIM:
+            cand = value * gPrimes1[level] ** my_exp
+            my_exp += 1
+            if g(cand) == 420:
+                sol = []
+                for f, m in factor_multiplicity(cand):
+                    sol.append(m)
+                sol.sort()
+                base_sol.add(tuple(sol))
+            deapen(cand, level + 1)
+    deapen(1, 0)
+    return base_sol
+
+
 def g(N):
     c_1 = c_3 = 0
     for divisor in gen_odd_divisors(N ** 2):
@@ -180,10 +183,6 @@ def g(N):
 
 
 def acc_solutions():
-    print "init_primes()..."
-    init_primes()
-    print "construct_safe_multiples()..."
-    construct_safe_multiples()
     acc = 0
     cand = None
     for sol in yield_base_sol():
@@ -197,54 +196,19 @@ def acc_solutions():
 
 
 if __name__ == '__main__':
-    '''
-    acc = 0
-    #for i in xrange(10000, 20 * 10000, 10000):
-    #for i in xrange(int(1E11), 1, -1):
-    #for i in xrange(10000, 10001):
-    for i in xrange(10000, 10100):
-    #print g(48612265)
-    #for i in xrange(359125, 359126):
-        val = f(i)
-        val_2 = g(i)
-        print i, val, val_2
-        if val_2 == 420:
-            print 'here'
-            acc += i
-
-    x = 0
-    i = 1
-    acc = 0
-    while True:
-        i += 1
-        y = gen_num_primes_con(i, 1)
-        acc = 1
-        for z in y:
-            acc *= z
-
-        if g(x) > 420:
-            break
-        else:
-            x = acc
-
-    primes = y
-    print primes
-    print acc
-    print g(acc)
-    print 5 ** 3 * 13 ** 2 * 17
-    print 5 ** 7 * 13 ** 3
-    print g(5 ** 3 * 13 ** 2 * 17)
-    print g(5 ** 7 * 13 ** 3)
-    '''
-
-    '''
     start = time.time()
-    print acc_solutions()
-    print "Time taken:", time.time() - start
-    '''
-    acc = 0
-    for i in xrange(LIM):
-        if g(i) == 420:
-            acc += i
-    print acc
+    print "LIM:", LIM
+    print "Initializing primes ..."
+    start_init_primes = time.time()
+    init_primes()
+    print "\t\t\t\tdone --", time.time() - start_init_primes, "seconds"
+
+    print "construct_safe_multiples() ..."
+    start_construct = time.time()
+    construct_safe_multiples()
+    print "\t\t\t\tdone --", time.time() - start_construct, "seconds"
+
+    sol = acc_solutions()
+    print "Solution:", sol
+    print "Time taken:", time.time() - start, "seconds"
 
