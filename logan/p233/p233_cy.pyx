@@ -4,15 +4,25 @@ import analyze
 import time
 
 
+'''
+cdef long gPrimes1[165549]
+cdef long gPrimes3[165626]
+cdef long gMultiples[1240182]
+'''
 gPrimes1 = []
 gPrimes3 = []
-gMultiples = [1]
+gMultiples = []
+gMultiples.append(1)
+
+
+cdef unsigned long LIM
 LIM = int(1E11)
-LIM = int(1E9)
+cdef unsigned long MAX
 MAX = LIM / (5 ** 3 * 13 ** 2)
 
 
 def init_primes():
+    cdef int i
     for i in xrange(3, MAX, 2):
         if analyze.pprime(i):
             if i % 4 == 1:
@@ -23,7 +33,20 @@ def init_primes():
 
 def yield_base_sol():
     base_sol = set()
-    def deapen(value, primes, exponents):
+    cdef unsigned long exp
+    cdef unsigned long prime_index
+    cdef unsigned long prime
+    cdef unsigned long cand
+    cdef unsigned long num_of_exponents
+    cdef unsigned long max_index
+
+    for i in range(len(gPrimes1) - 2):
+        if gPrimes1[i] ** 3 * gPrimes1[i + 1] ** 2 * gPrimes1[i + 2] > LIM:
+            break
+        else:
+            max_index = i
+
+    def deapen(unsigned long value, primes, exponents):
         for prime_index in range(len(primes)):
             for exp in exponents:
                 prime = primes[prime_index]
@@ -34,8 +57,15 @@ def yield_base_sol():
                 deaper_exponents.remove(exp)
                 deaper_primes = primes[prime_index + 1:]
                 deapen(cand, deaper_primes, deaper_exponents)
-                if len(exponents) == 1:
+                num_of_exponents = len(exponents)
+                if num_of_exponents == 1:
                     base_sol.add(cand)
+                elif num_of_exponents == 3:
+                    if prime_index > max_index:
+                        return
+                    print "On index", prime_index, "out of", max_index
+                    last_time = time.time()
+
     for exponents in find_base_exponents():
         print "\tUsing exponents:", exponents, "..."
         start = time.time()
@@ -194,22 +224,4 @@ def acc_solutions():
             else:
                 break
     return acc
-
-
-if __name__ == '__main__':
-    start = time.time()
-    print "LIM:", LIM
-    print "Initializing primes ..."
-    start_init_primes = time.time()
-    init_primes()
-    print "\t\t\t\tdone --", time.time() - start_init_primes, "seconds"
-
-    print "construct_safe_multiples() ..."
-    start_construct = time.time()
-    construct_safe_multiples()
-    print "\t\t\t\tdone --", time.time() - start_construct, "seconds"
-
-    sol = acc_solutions()
-    print "Solution:", sol
-    print "Time taken:", time.time() - start, "seconds"
 
