@@ -211,7 +211,8 @@ def nearly_equal(a, b, n=3):
     else:
         return False
 
-def main():
+
+if __name__ == '__main__':
     start = Beam((0, 10.1))
     start.set_end((1.4, -9.6))
     start.set_slope((start.end[1] - start.start[1]) /
