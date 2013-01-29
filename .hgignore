@@ -3,6 +3,7 @@ syntax: regexp
 .*\.sw[op]$
 .*\.o$
 .*\.out$
+.*\.class$
 .*latex.*
 .*html.*
 pUML$
