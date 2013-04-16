@@ -1,15 +1,12 @@
 def gen17():
-    x = 0;
-    while x < 1000:
+    for x in range(0, 1000, 17):
         yield ('000' + str(x))[-3:]
-        x += 17
 
 def gen_for_num(str_input, num):
     for x in range(0, 10):
         new_string = str(x) + str_input
-        if len(new_string) == len(set(new_string)):
-            if int(new_string[:3]) % num == 0:
-                yield new_string
+        if len(new_string) == len(set(new_string)) and int(new_string[:3]) % num == 0:
+            yield new_string
 
 def main():
     results = []
@@ -22,10 +19,7 @@ def main():
                             for x2 in gen_for_num(x3, 2):
                                 for x1 in gen_for_num(x2, 1):
                                     results += [x1]
-    acc = 0
-    for result in results:
-        acc += int(result)
-    print acc
+    print sum([int(x) for x in results])
 
 
 if __name__ == '__main__':
