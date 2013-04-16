@@ -1,6 +1,5 @@
 import math as m
 import numpy as np
-import pylab
 from matplotlib.patches import Ellipse
 import matplotlib.lines as mlines
 
