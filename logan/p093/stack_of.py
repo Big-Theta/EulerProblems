@@ -4,6 +4,7 @@ class NotUnique(Exception): pass
 class CannotEvaluate(Exception): pass
 
 class Stack(object):
+    """Represents an arithmatic stack."""
     def __init__(self, numbers=[1, 2, 3, 4]):
         self.stack = []
         self.numbers = [float(x) for x in numbers]
@@ -27,12 +28,21 @@ class Stack(object):
             self.stack.append(vals[code])
 
     def push(self, val):
+        """Places an element on the stack.
+
+        .. todo:: Check for non-evaluatable arguments.
+        """
         try:
             self.stack.append(float(val))
         except:
             self.stack.append(val)
 
     def evaluate(self):
+        """
+        .. todo::
+            This is a todo.
+
+        """
         def red_func(a, b, op):
             if (op not in ['+', '-', '/', '*'] or
                 not isinstance(a, float) or
@@ -139,9 +149,9 @@ if __name__ == '__main__':
         this_len = longest(collect)
         if this_len > max_len:
             max_len = this_len
-            print numbers
-            print stack, max_len
-    print max_len
+            print(numbers)
+            print(stack, max_len)
+    print(max_len)
 
     """
     s = Stack()
